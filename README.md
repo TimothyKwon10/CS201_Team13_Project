@@ -25,7 +25,3 @@ A modern web interface for viewing, tracking, and rating USC dining halls. This 
 ## Development
 
 The project uses vanilla HTML, CSS, and JavaScript for simplicity and performance. The styling is modular and follows modern CSS practices.
-
-## License
-
-MIT License - feel free to use this code for your own projects!
