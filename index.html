@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>DINING HALL PAGE</title>
+	<link rel = "stylesheet" href = "style.css">
+</head>
+
+<body>
+    <div id = "page">
+        <div id = "header">
+            <div id = "leftHeader">
+                <img src = "/images/USC_seal.png" id = "homeIcon">
+                <h1>Home</h1>
+            </div>
+            <div id  = "rightHeader">
+                <input type = "button" value = "Everybody's Kitchen" class = "headerButton" id = "EVKButton">
+                <input type = "button" value = "USC Village Dining Hall" class = "headerButton" id = "villageButton">
+                <input type = "button" value = "Parkside Restaurant and Grill" class = "headerButton" id = "parksideButton">
+            </div>  
+        </div>
+        <div id = "hero">
+            <h1 id = heroText>Everybody's Kitchen</h1>
+            <img src = "images/whiteArrow.png" id = "downArrow">
+        </div>
+        <div class = "centering">
+            <div id = "searchSection">
+                <form id = "form">
+                    <button type = "submit" class = "searchButton" id = "searchIcon"><img src = "/images/search_icon.png" class = "searchIMG"></button> <!-- probably needs a name for backend access-->
+                    <input type = "search" placeholder = "Search for a meal" id = "searchBar">
+                    <button type = "button" class = "searchButton" id = "clearButton"><img src = "/images/clear_icon.png" class = "searchIMG"></button>
+                </form>
+                <div id = "dropdown">
+                    <!--DROP DOWN MENU GOES HERE-->
+                </div>
+            </div>
+        </div>
+        <div class = "centering"> <!--DINING HALL INFO-->
+            <div id = "diningHallInfo"> 
+                <div id = "leftSection">
+                    <h1 class = "centering" id  = "descriptionHeader">A Little About EVK</h1>
+                    <p> Home style menu served buffet-style format as well as exhibition-style cooking, full salad & sandwich bar (all-you-care-to eat). 
+                        Part of the meal plan program, but also open for cash and credit card purchase.<br><br>
+
+                        Located adjacent to Birnkrant and New Residential Colleges, Everybody’s Kitchen (EVK) 
+                        offers homestyle favorites, made to order action station, pizza, daily grill specials, salad bar, 
+                        and dessert station. <br><br>
+
+                        Enjoy monthly theme nights, where we transform the dining room, bring in entertainment and let our 
+                        chefs “go all out” with the menu. <br><br>
+                        
+                        Each residential community is anchored by an all-you-care to eat dining venue. Specific meal plan participants
+                        enjoy unlimited access to all three restaurants. Each restaurant offers a different culinary experience appealing 
+                        to a variety of dining preferences and nutritional lifestyles of our diverse student population.</p>
+                </div>    
+                <div id = "rightSection">
+                    <div id = "menu">
+                        <h1 class = "centering">Today's Menu</h1>
+                        <ul>
+                            ewkdhwfkhskdkf
+                        </ul>
+                    </div>
+                    <div id = "crowdSection">
+                        <!-- <img src = "images/crowd.png" id = "crowdIMG"> -->
+                        <h1 id = "crowdTitle">How Packed Is EVK?</h1>
+                        <div id = "crowdLVL">
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                        </div>
+                        <p id = "crowdDescription">(The dining hall is "moderately busy")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src = "script.js"></script>
+</body>
+</html>

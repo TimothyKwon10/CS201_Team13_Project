@@ -1,4 +1,6 @@
-# USC Dining Halls
+# CS201_Team13_Project
+
+## USC Dining Halls
 
 A modern web interface for viewing, tracking, and rating USC dining halls. This project provides an intuitive way for students to:
 
@@ -26,4 +28,4 @@ The project uses vanilla HTML, CSS, and JavaScript for simplicity and performanc
 
 ## License
 
-MIT License - feel free to use this code for your own projects! 
+MIT License - feel free to use this code for your own projects!
