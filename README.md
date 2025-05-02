@@ -19,7 +19,7 @@ A modern web interface for viewing, tracking, and rating USC dining halls. This 
 ## Setup
 
 1. Clone the repository
-2. Open `index.html` in your browser
+2. Open `HomePage.html` in your browser
 3. Make sure the Tiempos font files are in the correct directory (`Tiempos/TiemposText-Regular.otf`)
 
 ## Development
