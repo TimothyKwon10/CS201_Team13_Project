@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Page</title>
+</head>
+<body>
+
+<h1 id="welcome">Welcome!</h1>
+
+<script>
+// After page loads, fetch user info
+fetch('/loginpage/UserInfoServlet')
+    .then(response => {
+        if (response.status === 401) {
+            // Not logged in, redirect to login page
+            window.location.href = 'loginScreen.html';
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.getElementById('welcome').innerText = "Welcome, " + data.email + "!";
+    })
+    .catch(error => {
+        console.error('Error fetching user info:', error);
+    });
+</script>
+
+</body>
+</html>
