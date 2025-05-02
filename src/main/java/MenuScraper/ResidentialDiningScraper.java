@@ -16,8 +16,6 @@ import java.util.Scanner;
 public class ResidentialDiningScraper {
 
     public static String fetchHTML(String targetUrl) throws IOException {
-    	File file = new File("dining.txt");
-    	FileWriter writer = new FileWriter(file);
         URL url = new URL(targetUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
@@ -28,8 +26,6 @@ public class ResidentialDiningScraper {
             html.append(scanner.nextLine()).append("\n");
         }
         scanner.close();
-    	writer.write(html.toString());
-    	writer.close();
         return html.toString();
     }
       
