@@ -57,7 +57,7 @@
                     <div id = "menu">
                         <h1 class = "centering">Today's Menu</h1>
                         <ul>
-                            ewkdhwfkhskdkf
+                            menu items for today go here
                         </ul>
                     </div>
                     <div id = "crowdSection">
@@ -74,6 +74,53 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class = "centering">
+            <div id = "imgAndReviews">
+                <div id = "reviewSection"> 
+                    <div id = "reviewHeaderPortion">
+                        <h1 id = "reviewsHeader">Reviews</h1>
+                        <h1 id = "overallRating">4.0</h1>
+                    </div>
+                    <div id = "existingReviews">
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                    </div>
+                    <form id = "rate" class = "centering">
+                        <textarea id="inputText" placeholder="Please leave a review:" required></textarea>
+                        <div id = "starContainer">
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "1">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "2">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "3">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "4">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "5">&#9733;</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" required>
+                        <input type = "submit" id = "submitButton">
+                        <div id = "reviewError">
+                            <!--Error message goes here-->
+                            PLEASE SUBMIT A STAR RATING
+                        </div>
+                    </form>
+                </div>
+                <img src = "/images/evk_food.png" id = "foodIMG">
+            </div>
+        </div>
+        <div id = "bottomSection">
+            <h1 id = "bottomHeader">Weekly Menu Calendar</h1>
+            <div class="calendar" id="calendar"></div>
         </div>
     </div>
     <script src = "script.js"></script>
