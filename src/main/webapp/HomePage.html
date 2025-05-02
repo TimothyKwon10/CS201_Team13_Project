@@ -159,6 +159,46 @@
         		window.location.href = 'parkside/parkside.html';
         	}
         }
+        
+        //SIGN UP functionality
+        document.querySelectorAll('.btn-auth')[0].addEventListener('click', () => {
+            const usc_id = prompt("Enter USC ID:");
+            const email = prompt("Enter Email:");
+            const first_name = prompt("Enter First Name:");
+            const last_name = prompt("Enter Last Name:");
+            const password = prompt("Enter Password: ");
+
+            fetch('RegisterServlet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `usc_id=${usc_id}&email=${encodeURIComponent(email)}&first_name=${encodeURIComponent(first_name)}&last_name=${encodeURIComponent(last_name)}&password=${encodeURIComponent(password)}`
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message))
+            .catch(err => alert("Registration failed: " + err.message));
+        });
+        
+        
+        //SIGN IN functionality
+        document.querySelectorAll('.btn-auth')[1].addEventListener('click', () => {
+            const email = prompt("Enter Email:");
+            const password = prompt("Enter Password:");
+
+            fetch('LoginServlet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `email=${email}&password=${encodeURIComponent(password)}`
+            })
+            .then(res => {
+                if (res.ok) return res.json();
+                else throw new Error("Login failed.");
+            })
+            .then(data => {
+                alert(data.message);
+                //possible for later: set cookie or redirect here
+            })
+            .catch(err => alert(err.message));
+        });
     </script>
 </body>
 </html>
