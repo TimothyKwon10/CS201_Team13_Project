@@ -265,7 +265,7 @@ function menuSetup() {
 
 			const labels = ["Breakfast", "Brunch", "Lunch", "Dinner"];
 			for (let i = 0; i < 4; i++) {
-				const mealArray = result.village[i];
+				const mealArray = result.parkside[i];
 				if (mealArray && mealArray.length > 0) {
 					menuEntry.innerText += labels[i] + ":\n";
 					for (let j = 0; j < mealArray.length; j++) {
