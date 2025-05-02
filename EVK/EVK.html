@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>DINING HALL PAGE</title>
+	<link rel = "stylesheet" href = "EVK.css">
+</head>
+
+<body>
+    <div id = "page">
+        <div id = "header">
+            <div id = "leftHeader">
+                <img src = "/images/USC_seal.png" id = "homeIcon">
+                <h1>Home</h1>
+            </div>
+            <div id  = "rightHeader">
+                <input type = "button" value = "Everybody's Kitchen" class = "headerButton" id = "EVKButton">
+                <input type = "button" value = "USC Village Dining Hall" class = "headerButton" id = "villageButton">
+                <input type = "button" value = "Parkside Restaurant and Grill" class = "headerButton" id = "parksideButton">
+            </div>  
+        </div>
+        <div id = "hero">
+            <h1 id = heroText>Everybody's Kitchen</h1>
+            <img src = "/images/whiteArrow.png" id = "downArrow">
+        </div>
+        <div class = "centering">
+            <div id = "searchSection">
+                <form id = "form">
+                    <button type = "submit" class = "searchButton" id = "searchIcon"><img src = "/images/search_icon.png" class = "searchIMG"></button> <!-- probably needs a name for backend access-->
+                    <input type = "search" placeholder = "Search for a meal" id = "searchBar">
+                    <button type = "button" class = "searchButton" id = "clearButton"><img src = "/images/clear_icon.png" class = "searchIMG"></button>
+                </form>
+                <div id = "dropdown">
+                    <!--DROP DOWN MENU GOES HERE-->
+                </div>
+            </div>
+        </div>
+        <div class = "centering"> <!--DINING HALL INFO-->
+            <div id = "diningHallInfo"> 
+                <div id = "leftSection">
+                    <h1 class = "centering" id  = "descriptionHeader">A Little About EVK</h1>
+                    <p> Home style menu served buffet-style format as well as exhibition-style cooking, full salad & sandwich bar (all-you-care-to eat). 
+                        Part of the meal plan program, but also open for cash and credit card purchase.<br><br>
+
+                        Located adjacent to Birnkrant and New Residential Colleges, Everybody’s Kitchen (EVK) 
+                        offers homestyle favorites, made to order action station, pizza, daily grill specials, salad bar, 
+                        and dessert station. <br><br>
+
+                        Enjoy monthly theme nights, where we transform the dining room, bring in entertainment and let our 
+                        chefs “go all out” with the menu. <br><br>
+                        
+                        Each residential community is anchored by an all-you-care to eat dining venue. Specific meal plan participants
+                        enjoy unlimited access to all three restaurants. Each restaurant offers a different culinary experience appealing 
+                        to a variety of dining preferences and nutritional lifestyles of our diverse student population.</p>
+                </div>    
+                <div id = "rightSection">
+                    <div id = "menu">
+                        <h1 class = "centering">Today's Menu</h1>
+                        <ul>
+                            menu items for today go here
+                        </ul>
+                    </div>
+                    <div id = "crowdSection">
+                        <!-- <img src = "images/crowd.png" id = "crowdIMG"> -->
+                        <h1 id = "crowdTitle">How Packed Is EVK?</h1>
+                        <div id = "crowdLVL">
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                        </div>
+                        <p id = "crowdDescription">(The dining hall is "moderately busy")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class = "centering">
+            <div id = "imgAndReviews">
+                <div id = "reviewSection"> 
+                    <div id = "reviewHeaderPortion">
+                        <h1 id = "reviewsHeader">Reviews</h1>
+                        <h1 id = "overallRating">4.0</h1>
+                    </div>
+                    <div id = "existingReviews">
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                    </div>
+                    <form id = "rate" class = "centering">
+                        <textarea id="inputText" placeholder="Please leave a review:" required></textarea>
+                        <div id = "starContainer">
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "1">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "2">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "3">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "4">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "5">&#9733;</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" required>
+                        <input type = "submit" id = "submitButton">
+                        <div id = "reviewError">
+                            <!--Error message goes here-->
+                            PLEASE SUBMIT A STAR RATING
+                        </div>
+                    </form>
+                </div>
+                <img src = "/images/evk_food.png" id = "foodIMG">
+            </div>
+        </div>
+        <div id = "bottomSection">
+            <h1 id = "bottomHeader">Weekly Menu Calendar</h1>
+            <div class="calendar" id="calendar"></div>
+        </div>
+    </div>
+    <script src = "EVK.js"></script>
+</body>
+</html>

@@ -30,22 +30,20 @@ searchBar.addEventListener('input', () => {
 
     const input = searchBar.value.toLowerCase();
 
-    if (input === "") { //nothing is inputted yet
+    if (input === "") {
         dropdown.style.display = "none";
         return;
     }
 
-    const filter = testData.filter(testData => testData.toLowerCase().includes(input)); //filters based on current search
-    if (filter.length === 0) {//no search results appear
+    const filter = testData.filter(testData => testData.toLowerCase().includes(input));
+
+    if (filter.length === 0) {
         const dropdownItem = document.createElement("div");
-
         dropdownItem.textContent = "There are no menu items with that name.";
-        dropdownItem.style.color = "#757575"
+        dropdownItem.style.color = "#757575";
         dropdownItem.className = "dropdownItem";
-
         dropdown.appendChild(dropdownItem);
-    }
-    else {
+    } else {
         for (let i = 0; i < filter.length; i++) {
             const dropdownItem = document.createElement("div"); 
             dropdownItem.className = "dropdownItem";
@@ -54,13 +52,24 @@ searchBar.addEventListener('input', () => {
             text.textContent = filter[i];
             text.className = "dropdownSizing";
             
-            const favoriteIcon = document.createElement("span");
-            favoriteIcon.innerHTML = "&#9734";
-            favoriteIcon.className = "dropdownSizing";
+            const favoriteIcon = document.createElement("button");
+            favoriteIcon.innerHTML = "&#9734;"; // empty star
+            favoriteIcon.className = "dropdownSizing star-btn";
+            favoriteIcon.setAttribute('aria-label', 'Favorite');
+
+            // ✅ Add toggle behavior just like the calendar
+            favoriteIcon.addEventListener('click', () => {
+                if (favoriteIcon.innerHTML === "☆") {
+                    favoriteIcon.innerHTML = "&#9733;"; // filled star
+                    favoriteIcon.style.color = "#f0a500";
+                } else {
+                    favoriteIcon.innerHTML = "&#9734;";
+                    favoriteIcon.style.color = "#999";
+                }
+            });
 
             dropdownItem.appendChild(text);
             dropdownItem.appendChild(favoriteIcon);
-
             dropdown.appendChild(dropdownItem);
         }
     }
