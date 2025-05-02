@@ -229,3 +229,15 @@ days.forEach(day => {
 
   calendar.appendChild(dayDiv);
 });
+
+function navigateTo(page){
+	if (page === 'evk') {
+		window.location.href = '../EVK/EVK.html';
+	} else if (page === 'village') {
+		window.location.href = '../village/village.html';
+	} else if (page === 'parkside') {
+		window.location.href = '../parkside/parkside.html';
+	} else if(page === 'homes'){
+		window.location.href = '../HomePage.html';
+	}
+}
