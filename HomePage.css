@@ -6,7 +6,8 @@
     font-style: normal;
 }
 
-/* Global Styles */
+/* Global Styles #eoeoeo, #990001*/
+
 * {
     margin: 0;
     padding: 0;
@@ -82,7 +83,7 @@ body {
 .btn-auth {
     background: none;
     border: none;
-    color: #605846;
+    color: #000000;
     cursor: pointer;
     font-family: 'Helvetica', Arial, sans-serif;
     font-size: 14px;
@@ -125,7 +126,7 @@ body {
 }
 
 .btn-action {
-    background-color: #605846;
+    background-color: #990001;
     color: #FFFFFF;
     border: none;
     border-radius: 50px;
@@ -141,7 +142,7 @@ body {
 }
 
 .btn-action:hover {
-    background-color: #4a4235;
+    background-color: #680000;
 }
 
 .btn-action i {
@@ -206,14 +207,14 @@ body {
 }
 
 .rating i {
-    color: #605846;
+    color: #000000;
 }
 
 .traffic {
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #605846;
+    color: #000000;
 }
 
 /* Meal Tags */
@@ -239,16 +240,16 @@ body {
 }
 
 .meal-tag i {
-    color: #605846;
+    color:  #990001;
     font-size: 14px;
 }
 
 .meal-tag:hover {
-    border-color: #605846;
+    border-color:  #990001;
 }
 
 .meal-tag.favorited {
-    border-color: #605846;
+    border-color: #990001;
 }
 
 /* Responsive Design */
