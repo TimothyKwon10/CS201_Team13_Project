@@ -18,3 +18,4 @@ yarn.lock
 .env.local
 .env.*.local 
 /build/
+build/
