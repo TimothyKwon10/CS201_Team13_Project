@@ -160,6 +160,7 @@
         	}
         }
         
+        /*
         //SIGN UP functionality
         document.querySelectorAll('.btn-auth')[0].addEventListener('click', () => {
             const usc_id = prompt("Enter USC ID:");
@@ -176,9 +177,9 @@
             .then(res => res.json())
             .then(data => alert(data.message))
             .catch(err => alert("Registration failed: " + err.message));
-        });
+        });*/
         
-        
+        /*
         //SIGN IN functionality
         document.querySelectorAll('.btn-auth')[1].addEventListener('click', () => {
             const email = prompt("Enter Email:");
@@ -198,7 +199,18 @@
                 //possible for later: set cookie or redirect here
             })
             .catch(err => alert(err.message));
-        });
+        });*/
+        
+            document.querySelectorAll('.btn-auth')[0].addEventListener('click', () => {
+    		    window.location.href = 'registerPage.html';
+    		});
+
+            
+            
+            //SIGN IN redirect to loginpage.html
+    		document.querySelectorAll('.btn-auth')[1].addEventListener('click', () => {
+    		    window.location.href = 'loginPage.html';
+    		});
     </script>
 </body>
 </html>
