@@ -6,7 +6,7 @@
 	<link rel = "stylesheet" href = "village.css">
 </head>
 
-<body>
+<body onload = 'menuSetup()'>
     <div id = "page">
         <div id = "header">
             <div id = "leftHeader" onclick="navigateTo('homes')">
@@ -58,7 +58,7 @@
                 <div id = "rightSection">
                     <div id = "menu">
                         <h1 class = "centering">Today's Menu</h1>
-                        <ul>
+                        <ul id = "menuEntry">
                             menu items for today go here
                         </ul>
                     </div>
