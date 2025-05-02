@@ -45,12 +45,12 @@ public class LoginServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		
         String email = request.getParameter("email");
-        int uscID = Integer.parseInt(request.getParameter("usc_id"));
+        String password = request.getParameter("password");
         
         try (Connection con = DBConnection.getConnection()) {
-            PreparedStatement st = con.prepareStatement("SELECT * FROM Users WHERE usc_id=? AND email=?");
-            st.setInt(1, uscID);
-            st.setString(2, email);
+            PreparedStatement st = con.prepareStatement("SELECT * FROM Users WHERE email=? AND password=?");
+            st.setString(1, email);
+            st.setString(2, password);
 
             ResultSet rs = st.executeQuery();
 

@@ -49,6 +49,7 @@ public class RegisterServlet extends HttpServlet {
         String firstName = request.getParameter("first_name");
         String lastName = request.getParameter("last_name");
         int uscID = Integer.parseInt(request.getParameter("usc_id"));
+        String password = request.getParameter("password");
 
         try (Connection con = DBConnection.getConnection()) {
             // Check if user already exists
@@ -63,11 +64,12 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            PreparedStatement st = con.prepareStatement("INSERT INTO Users (usc_id, email, first_name, last_name) VALUES (?, ?, ?, ?)");
+            PreparedStatement st = con.prepareStatement("INSERT INTO Users (usc_id, email, first_name, last_name, password) VALUES(?, ?, ?, ?, ?)");
             st.setInt(1, uscID);
             st.setString(2, email);
             st.setString(3, firstName);
             st.setString(4, lastName);
+            st.setString(5, password);
             st.executeUpdate();
 
             out.println("{\"message\": \"Registration successful.\"}");

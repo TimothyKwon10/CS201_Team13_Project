@@ -166,11 +166,12 @@
             const email = prompt("Enter Email:");
             const first_name = prompt("Enter First Name:");
             const last_name = prompt("Enter Last Name:");
+            const password = prompt("Enter Password: ");
 
             fetch('RegisterServlet', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `usc_id=${usc_id}&email=${encodeURIComponent(email)}&first_name=${encodeURIComponent(first_name)}&last_name=${encodeURIComponent(last_name)}`
+                body: `usc_id=${usc_id}&email=${encodeURIComponent(email)}&first_name=${encodeURIComponent(first_name)}&last_name=${encodeURIComponent(last_name)}&password=${encodeURIComponent(password)}`
             })
             .then(res => res.json())
             .then(data => alert(data.message))
@@ -180,13 +181,13 @@
         
         //SIGN IN functionality
         document.querySelectorAll('.btn-auth')[1].addEventListener('click', () => {
-            const usc_id = prompt("Enter USC ID:");
             const email = prompt("Enter Email:");
+            const password = prompt("Enter Password:");
 
             fetch('LoginServlet', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `usc_id=${usc_id}&email=${encodeURIComponent(email)}`
+                body: `email=${email}&password=${encodeURIComponent(password)}`
             })
             .then(res => {
                 if (res.ok) return res.json();

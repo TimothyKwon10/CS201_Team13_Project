@@ -7,7 +7,8 @@ CREATE TABLE Users (
     usc_id INT PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
     first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL
+    last_name VARCHAR(50) NOT NULL,
+    password VARCHAR(50) NOT NULL
 );
 
 -- 2. Dining Halls
