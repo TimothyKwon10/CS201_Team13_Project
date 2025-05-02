@@ -245,7 +245,7 @@ function navigateTo(page){
 		window.location.href = '../HomePage.html';
 	}
 }
-
+/*
 async function menuSetup(){
 	event.preventDefault();
 	const url = window.location.origin + "/DiningHall_Backend/MenuSelectServlet";
@@ -306,4 +306,42 @@ async function menuSetup(){
 			}
 		}
 	}
+}
+*/
+
+function menuSetup() {
+	event.preventDefault();
+	const url = window.location.origin + "/DiningHall_Backend/MenuSelectServlet";
+	const menuEntry = document.getElementById('menuEntry');
+
+	fetch(url, { method: 'GET' })
+		.then(function(response) {
+			if (!response.ok) {
+				return response.text().then(function(result) {
+					console.error("Server responded with error:", result);
+				});
+			} else {
+				return response.json();
+			}
+		})
+		.then(function(result) {
+			if (!result) return;
+
+			console.log(result);
+			menuEntry.innerText = "";
+
+			const labels = ["Breakfast", "Brunch", "Lunch", "Dinner"];
+			for (let i = 0; i < 4; i++) {
+				const mealArray = result.village[i];
+				if (mealArray && mealArray.length > 0) {
+					menuEntry.innerText += labels[i] + ":\n";
+					for (let j = 0; j < mealArray.length; j++) {
+						menuEntry.innerText += mealArray[j].title + ": " + mealArray[j].meals[0] + "\n";
+					}
+				}
+			}
+		})
+		.catch(function(error) {
+			console.error("Fetch error:", error);
+		});
 }

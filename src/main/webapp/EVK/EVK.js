@@ -242,64 +242,39 @@ function navigateTo(page){
 	}
 }
 
-async function menuSetup(){
+function menuSetup() {
 	event.preventDefault();
 	const url = window.location.origin + "/DiningHall_Backend/MenuSelectServlet";
 	const menuEntry = document.getElementById('menuEntry');
-	
-	const response = await fetch(url, {method:'GET'});
-	
-	if(!response.ok){
-		const result = await response.text();
-		return;
-	} else {
-		const result = await response.json();
-		console.log(result);
-		
-		menuEntry.innerText = "";
-		if(result.evk[0].length != 0){
-			const breakfastArray = result.evk[0];
-			menuEntry.innerText += "Breakfast:\n";
-			for(var i in breakfastArray){
-				menuEntry.innerText += breakfastArray[i].title;
-				menuEntry.innerText += ": ";
-				menuEntry.innerText += breakfastArray[i].meals[0];
-				menuEntry.innerText += "\n";
+
+	fetch(url, { method: 'GET' })
+		.then(function(response) {
+			if (!response.ok) {
+				return response.text().then(function(result) {
+					console.error("Server responded with error:", result);
+				});
+			} else {
+				return response.json();
 			}
-			
-		}
-		
-		if(result.evk[1].length != 0){
-			menuEntry.innerText += "Brunch:\n";
-			const brunchArray = result.evk[1];
-			for(var i in brunchArray){
-				menuEntry.innerText += brunchArray[i].title;
-				menuEntry.innerText += ": ";
-				menuEntry.innerText += brunchArray[i].meals[0];
-				menuEntry.innerText += "\n";
+		})
+		.then(function(result) {
+			if (!result) return;
+
+			console.log(result);
+			menuEntry.innerText = "";
+
+			const labels = ["Breakfast", "Brunch", "Lunch", "Dinner"];
+			for (let i = 0; i < 4; i++) {
+				const mealArray = result.village[i];
+				if (mealArray && mealArray.length > 0) {
+					menuEntry.innerText += labels[i] + ":\n";
+					for (let j = 0; j < mealArray.length; j++) {
+						menuEntry.innerText += mealArray[j].title + ": " + mealArray[j].meals[0] + "\n";
+					}
+				}
 			}
-		}
-		
-		if(result.evk[2].length != 0){
-			menuEntry.innerText += "Lunch:\n";
-			const brunchArray = result.evk[2];
-			for(var i in brunchArray){
-				menuEntry.innerText += brunchArray[i].title;
-				menuEntry.innerText += ": ";
-				menuEntry.innerText += brunchArray[i].meals[0];
-				menuEntry.innerText += "\n";
-			}
-		}
-		
-		if(result.evk[3].length != 0){
-			menuEntry.innerText += "Dinner:\n";
-			const brunchArray = result.evk[3];
-			for(var i in brunchArray){
-				menuEntry.innerText += brunchArray[i].title;
-				menuEntry.innerText += ": ";
-				menuEntry.innerText += brunchArray[i].meals[0];
-				menuEntry.innerText += "\n";
-			}
-		}
-	}
+		})
+		.catch(function(error) {
+			console.error("Fetch error:", error);
+		});
 }
