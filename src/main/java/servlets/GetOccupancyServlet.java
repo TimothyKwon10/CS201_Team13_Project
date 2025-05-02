@@ -1,51 +1,54 @@
 package servlets;
 
+import util.DBConnection;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import util.DBConnection;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Servlet implementation class GetOccupancyServlet
+ */
 @WebServlet("/getOccupancy")
 public class GetOccupancyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public GetOccupancyServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-        Connection conn = null;
-        Statement stmt = null;
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
 
-        try {
-            conn = DBConnection.getConnection(); // Uses Darryl's DB connection
-            stmt = conn.createStatement();
-
-            String sql = "SELECT Dining_Hall_ID, Activity_Level, COUNT(*) AS count "
-                       + "FROM dining_hall_activity "
-                       + "GROUP BY Dining_Hall_ID, Activity_Level";
+            String sql = "SELECT dining_hall_id, activity_level, COUNT(*) AS count " +
+                         "FROM dining_hall_activity " +
+                         "GROUP BY dining_hall_id, activity_level";
 
             ResultSet rs = stmt.executeQuery(sql);
-
             JSONArray jsonArray = new JSONArray();
 
             while (rs.next()) {
                 JSONObject obj = new JSONObject();
-                obj.put("diningHallId", rs.getInt("Dining_Hall_ID"));
-                obj.put("activityLevel", rs.getString("Activity_Level"));
+                obj.put("diningHallId", rs.getInt("dining_hall_id"));
+                obj.put("activityLevel", rs.getString("activity_level"));
                 obj.put("count", rs.getInt("count"));
                 jsonArray.put(obj);
             }
@@ -54,10 +57,8 @@ public class GetOccupancyServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            out.print("{\"error\": \"" + e.getMessage() + "\"}");
-        } finally {
-            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print("{\"message\": \"Error retrieving occupancy data.\"}");
         }
     }
 }
