@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USC Dining Halls</title>
+    <link rel="stylesheet" href="HomePage.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <h1 class="site-title">USC Dining Halls</h1>
+            <div class="auth-buttons">
+                <button class="btn-auth">SIGN UP</button>
+                <button class="btn-auth">SIGN IN</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <div class="container">
+            <div class="hero-section">
+                <h2 class="hero-title">View, Track, and Rate Your<br>Favorite Dining Halls</h2>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="evk-button" class="btn-action" onclick="navigateTo('evk')">
+                        <i class="fas fa-cutlery"></i> EVERYBODY'S KITCHEN
+                    </button>
+                    <button id="village-button" class="btn-action" onclick="navigateTo('village')">
+                        <i class="fas fa-cutlery"></i> USC VILLAGE DINING HALL
+                    </button>
+                    <button id="parkside-button" class="btn-action" onclick="navigateTo('parkside')">
+                        <i class="fas fa-cutlery"></i> PARKSIDE KITCHEN AND GRILL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dining Hall Listings -->
+        <div class="dining-halls">
+            <div class="container">
+                <!-- Everybody's Kitchen -->
+                <div class="dining-hall">
+                    <div class="dining-hall-header">
+                        <h3 class="dining-hall-name">Everybody's Kitchen</h3>
+                        <div class="dining-hall-info">
+                            <span class="rating"><i class="fas fa-star"></i> 4.25</span>
+                            <span class="traffic"><i class="fas fa-chart-simple"></i> High Traffic</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meal-tags">
+                        <button class="meal-tag">
+                            Omelettes <i class="fas fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Tater Tots <i class="far fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Bacon <i class="far fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Yogurt Bar <i class="far fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Oat n' Honey Granola <i class="fas fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Mexican Style Eggs <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- USC Village Dining Hall -->
+                <div class="dining-hall">
+                    <div class="dining-hall-header">
+                        <h3 class="dining-hall-name">USC Village Dining Hall</h3>
+                        <div class="dining-hall-info">
+                            <span class="rating"><i class="fas fa-star"></i> 3.97</span>
+                            <span class="traffic"><i class="fas fa-chart-simple"></i> Medium Traffic</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meal-tags">
+                        <button class="meal-tag">
+                            Hoagie Rolls <i class="far fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Asian Peanut Zoodle Buddha Bowl <i class="fas fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Scrambled Eggs <i class="far fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Crispy Tofu with Maple Tamari <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Parkside Kitchen and Grill -->
+                <div class="dining-hall">
+                    <div class="dining-hall-header">
+                        <h3 class="dining-hall-name">Parkside Kitchen and Grill</h3>
+                        <div class="dining-hall-info">
+                            <span class="rating"><i class="fas fa-star"></i> 4.15</span>
+                            <span class="traffic"><i class="fas fa-chart-simple"></i> Low Traffic</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meal-tags">
+                        <button class="meal-tag">
+                            Chicken Fajitas <i class="far fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Make Your Own Waffle Bar <i class="far fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Omelettes <i class="fas fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Herb Roasted Turkey <i class="far fa-heart"></i>
+                        </button>
+                        <button class="meal-tag">
+                            Chili <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // JavaScript to toggle favorites
+        document.querySelectorAll('.meal-tag').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+            });
+        });
+        
+        function navigateTo(page){
+        	if (page === 'evk') {
+        		window.location.href = 'EVK/EVK.html';
+        	} else if (page === 'village') {
+        		window.location.href = 'village/village.html';
+        	} else if (page === 'parkside') {
+        		window.location.href = 'parkside/parkside.html';
+        	}
+        }
+    </script>
+</body>
+</html>

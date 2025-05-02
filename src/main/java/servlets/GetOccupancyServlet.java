@@ -1,3 +1,4 @@
+/*
 package servlets;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet("/getOccupancy")
+@WebServlet("/GetOccupancyServlet")
 public class GetOccupancyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -61,3 +62,4 @@ public class GetOccupancyServlet extends HttpServlet {
         }
     }
 }
+*/
