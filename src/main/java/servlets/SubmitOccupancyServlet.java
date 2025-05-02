@@ -1,51 +1,58 @@
 package servlets;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-
 import util.DBConnection;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
+/**
+ * Servlet implementation class SubmitOccupancyServlet
+ */
 @WebServlet("/submitOccupancy")
 public class SubmitOccupancyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public SubmitOccupancyServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-        String uscId = request.getParameter("uscId");
-        String diningHallId = request.getParameter("diningHallId");
-        String activityLevel = request.getParameter("activityLevel");
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
 
         try {
-            conn = DBConnection.getConnection(); // Uses Darryl's shared DB connection class
+            int uscID = Integer.parseInt(request.getParameter("usc_id"));
+            int diningHallID = Integer.parseInt(request.getParameter("dining_hall_id"));
+            String activityLevel = request.getParameter("activity_level");
 
-            String sql = "INSERT INTO dining_hall_activity (USC_ID, Dining_Hall_ID, Activity_Level, Report_Timestamp) "
-                       + "VALUES (?, ?, ?, NOW())";
+            try (Connection conn = DBConnection.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO dining_hall_activity (usc_id, dining_hall_id, activity_level, report_timestamp) VALUES (?, ?, ?, NOW())"
+                );
+                stmt.setInt(1, uscID);
+                stmt.setInt(2, diningHallID);
+                stmt.setString(3, activityLevel.toUpperCase());
+                stmt.executeUpdate();
 
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(uscId));
-            stmt.setInt(2, Integer.parseInt(diningHallId));
-            stmt.setString(3, activityLevel.toUpperCase());
-
-            stmt.executeUpdate();
-            response.getWriter().write("Success");
+                out.println("{\"message\": \"Occupancy report submitted successfully.\"}");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().write("Error: " + e.getMessage());
-        } finally {
-            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.println("{\"message\": \"Error submitting occupancy report.\"}");
         }
     }
 }
