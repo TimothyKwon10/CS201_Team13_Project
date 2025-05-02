@@ -43,12 +43,12 @@ public class UpDownVoteServlet extends HttpServlet {
         
         try {
         	//subject to change, tables values for Vote table
-            int uscID = Integer.parseInt(request.getParameter("uscID"));
-            int reviewID = Integer.parseInt(request.getParameter("reviewID"));
-            String UpDown = request.getParameter("UpDown");
+            int uscID = Integer.parseInt(request.getParameter("usc_id"));
+            int reviewID = Integer.parseInt(request.getParameter("review_id"));
+            String UpDown = request.getParameter("vote_type");
             
             try(Connection con = DBConnection.getConnection()){
-            	PreparedStatement st = con.prepareStatement("SELECT * FROM Votes WHERE USC_ID=? AND Review_ID=?");
+            	PreparedStatement st = con.prepareStatement("SELECT * FROM Votes WHERE usc_id=? AND review_id=?");
             	st.setInt(1, uscID);
             	st.setInt(2, reviewID);
             	
@@ -60,7 +60,7 @@ public class UpDownVoteServlet extends HttpServlet {
             	}
             	
             	//updating votes sql table
-            	PreparedStatement stI = con.prepareStatement("INSERT INTO Votes(USC_ID, Review_ID, Vote_Type) VALUES(?, ?, ?)");
+            	PreparedStatement stI = con.prepareStatement("INSERT INTO Votes(usc_id, review_id, vote_type) VALUES(?, ?, ?)");
             	stI.setInt(1, uscID);
             	stI.setInt(2, reviewID);
             	stI.setString(3, UpDown);
@@ -68,8 +68,8 @@ public class UpDownVoteServlet extends HttpServlet {
             	
             	//now actually updating the amount of UP AND DOWN table values in Review table
             	String sqlInsert = "";
-            	if(UpDown.equals("up")) sqlInsert = "UPDATE Reviews SET Upvotes=Upvotes+1 WHERE Review_ID=?";
-            	else sqlInsert = "UPDATE Reviews SET Downvotes=Downvotes+1 WHERE Review_ID=?";
+            	if(UpDown.equals("up")) sqlInsert = "UPDATE Reviews SET upvotes=upvotes+1 WHERE review_id=?";
+            	else sqlInsert = "UPDATE Reviews SET downvotes=downvotes+1 WHERE review_id=?";
             	
 
             	PreparedStatement Reviewst = con.prepareStatement(sqlInsert);

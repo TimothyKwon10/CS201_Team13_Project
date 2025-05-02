@@ -44,14 +44,14 @@ public class ReviewsServlet extends HttpServlet {
         
 		try {
 			//subject to change, I have the table values for Reviews here
-            int uscID = Integer.parseInt(request.getParameter("uscID"));
-            int dininghallID = Integer.parseInt(request.getParameter("dininghallID"));
+            int uscID = Integer.parseInt(request.getParameter("usc_id"));
+            int dininghallID = Integer.parseInt(request.getParameter("hall_id"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
             
             try (Connection con = DBConnection.getConnection()) {
             	//updating reviews
-            	PreparedStatement st = con.prepareStatement("INSERT INTO Reviews(USC_ID, Dining_Hall_ID, Rating, Comment) VALUES(?, ?, ?, ?)");
+            	PreparedStatement st = con.prepareStatement("INSERT INTO Reviews(usc_id, hall_id, rating, comment) VALUES(?, ?, ?, ?)");
                 st.setInt(1, uscID);
                 st.setInt(2, dininghallID);
                 st.setInt(3, rating);
