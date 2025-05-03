@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>USC Village Dining Hall | USC Dining Halls</title>
+	<link rel="stylesheet" href="village.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body onload='menuSetup()'>
+	<div id="page">
+		<header class="header">
+			<div class="header-container">
+				<div class="left-section">
+					<h1 class="site-title" onclick="navigateTo('home')">USC Dining Halls</h1>
+					<nav class="nav-buttons">
+						<button class="nav-btn" onclick="navigateTo('evk')">EVERYBODY'S KITCHEN</button>
+						<button class="nav-btn" onclick="navigateTo('village')">USC VILLAGE DINING HALL</button>
+						<button class="nav-btn" onclick="navigateTo('parkside')">PARKSIDE KITCHEN AND GRILL</button>
+					</nav>
+				</div>
+				<div class="auth-buttons">
+					<!-- These buttons will be replaced by userLoginState.js -->
+					<button class="btn-auth">SIGN UP</button>
+					<button class="btn-auth">SIGN IN</button>
+				</div>  
+			</div>
+		</header>
+		
+		<div id="hero">
+			<h1 id="heroText">USC Village Dining Hall</h1>
+		</div>
+		<div class="centering">
+			<div id="searchSection">
+				<form id="form">
+					<button type="submit" class="searchButton" id="searchIcon">
+						<i class="fas fa-search"></i>
+					</button>
+					<input type="search" placeholder="Search for a meal" id="searchBar">
+					<button type="button" class="searchButton" id="clearButton">
+						<i class="fas fa-times"></i>
+					</button>
+				</form>
+				<div id="dropdown">
+					<!--DROP DOWN MENU GOES HERE-->
+				</div>
+			</div>
+		</div>
+		<div class="centering"> <!--DINING HALL INFO-->
+			<div id="diningHallInfo"> 
+				<div id="leftColumn">
+					<div id="leftSection">
+						<h1 class="centering" id="descriptionHeader">A Little About USC Village</h1>
+						<p>USC Village Dining Hall offers a diverse menu with multiple stations including a grill, 
+						   salad bar, pizza station, and international cuisine options. The dining hall features 
+						   made-to-order stations and a variety of healthy options.<br><br>
+
+						   Located in the heart of USC Village, this modern dining facility serves the USC community 
+						   with fresh, locally-sourced ingredients and accommodates various dietary preferences including 
+						   vegetarian, vegan, and gluten-free options.<br><br>
+
+						   Special themed events and holiday celebrations feature unique menu items and festive 
+						   decorations throughout the academic year.<br><br>
+						   
+						   The dining hall is part of USC's residential dining program, offering unlimited access 
+						   to meal plan holders while also welcoming cash and credit card purchases from the broader 
+						   USC community.</p>
+					</div>    
+					
+					<div id="crowdSection">
+						<h1 id="crowdTitle">How Packed Is USC Village?</h1>
+						<div id="crowdLVL">
+							<span class="crowdCircle">&#9675;</span>
+							<span class="crowdCircle">&#9675;</span>
+							<span class="crowdCircle">&#9675;</span>
+							<span class="crowdCircle">&#9675;</span>
+							<span class="crowdCircle">&#9675;</span>
+						</div>
+						<p id="crowdDescription">(The dining hall is "moderately busy")</p>
+					</div>
+				</div>
+
+				<div id="rightSection">
+					<div id="menu">
+						<h1 class="centering">Today's Menu</h1>
+						<div id="menuEntry">
+							<!-- Menu categories will be populated here -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="centering">
+			<div id="reviewContainer">
+				<div id="reviewSection"> 
+					<div id="reviewHeaderPortion">
+						<h1 id="reviewsHeader">Reviews</h1>
+						<h1 id="overallRating">4.2</h1>
+					</div>
+					<div id="existingReviews">
+						<div class="review-item">
+							<div class="review-header">
+								<span class="review-author">Sarah Johnson</span>
+								<div class="review-rating">
+									<i class="fas fa-heart"></i>
+									<i class="fas fa-heart"></i>
+									<i class="fas fa-heart"></i>
+									<i class="fas fa-heart"></i>
+									<i class="fas fa-heart"></i>
+								</div>
+							</div>
+							<p class="review-text">Love the international cuisine options! The made-to-order stations are fantastic.</p>
+						</div>
+						<div class="review-item">
+							<div class="review-header">
+								<span class="review-author">Michael Chen</span>
+								<div class="review-rating">
+									<i class="fas fa-heart"></i>
+									<i class="fas fa-heart"></i>
+									<i class="fas fa-heart"></i>
+									<i class="fas fa-heart"></i>
+									<i class="far fa-heart"></i>
+								</div>
+							</div>
+							<p class="review-text">Great variety and fresh ingredients. The salad bar is always well-stocked.</p>
+						</div>
+					</div>
+					<div id="reviewFormSection">
+						<!-- This section will be populated by JavaScript based on login status -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="bottomSection">
+			<h1 id="bottomHeader">Weekly Menu Calendar</h1>
+			<div class="calendar" id="calendar">
+				<!-- Calendar will be populated here -->
+			</div>
+		</div>
+	</div>
+	<script src="village.js"></script>
+	<script src="../userLoginState.js"></script>
+	<script>
+		function navigateTo(page) {
+			if (page === 'home') {
+				window.location.href = '../HomePage.html';
+			} else if (page === 'evk') {
+				window.location.href = '../EVK/EVK.html';
+			} else if (page === 'village') {
+				window.location.href = '../village/village.html';
+			} else if (page === 'parkside') {
+				window.location.href = '../parkside/parkside.html';
+			}
+		}
+
+		// Handle review form display based on login status
+		document.addEventListener('DOMContentLoaded', function() {
+			const reviewFormSection = document.getElementById('reviewFormSection');
+			const isLoggedIn = checkLoginStatus(); // From userLoginState.js
+
+			if (isLoggedIn) {
+				reviewFormSection.innerHTML = `
+					<form class="review-form" id="reviewForm">
+						<textarea placeholder="Share your thoughts about USC Village Dining Hall..." required></textarea>
+						<div class="review-form-footer">
+							<div class="rating-select">
+								<i class="far fa-heart" data-rating="1"></i>
+								<i class="far fa-heart" data-rating="2"></i>
+								<i class="far fa-heart" data-rating="3"></i>
+								<i class="far fa-heart" data-rating="4"></i>
+								<i class="far fa-heart" data-rating="5"></i>
+							</div>
+							<button type="submit" class="submit-review">Submit Review</button>
+						</div>
+					</form>
+				`;
+
+				// Handle rating selection
+				const ratingIcons = document.querySelectorAll('.rating-select i');
+				ratingIcons.forEach(icon => {
+					icon.addEventListener('click', function() {
+						const rating = this.dataset.rating;
+						ratingIcons.forEach(i => {
+							if (i.dataset.rating <= rating) {
+								i.classList.remove('far');
+								i.classList.add('fas');
+							} else {
+								i.classList.remove('fas');
+								i.classList.add('far');
+							}
+						});
+					});
+				});
+
+				// Handle form submission
+				document.getElementById('reviewForm').addEventListener('submit', function(e) {
+					e.preventDefault();
+					// Add review submission logic here
+				});
+			}
+		});
+	</script>
+</body>
+</html>

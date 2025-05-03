@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USC Dining Halls</title>
+    <link rel="stylesheet" href="HomePage.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="left-section">
+                <h1 class="site-title">USC Dining Halls</h1>
+                <div class="nav-buttons">
+                    <button class="nav-btn" onclick="navigateTo('evk')">EVERYBODY'S KITCHEN</button>
+                    <button class="nav-btn" onclick="navigateTo('village')">USC VILLAGE DINING HALL</button>
+                    <button class="nav-btn" onclick="navigateTo('parkside')">PARKSIDE KITCHEN AND GRILL</button>
+                </div>
+            </div>
+            <div class="auth-buttons">
+                <!-- These buttons will be replaced by userLoginState.js -->
+                <button class="btn-auth">SIGN UP</button>
+                <button class="btn-auth">SIGN IN</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <div class="container">
+            <div class="hero-section">
+                <h2 class="hero-title">View, Track, and Rate Your<br>Favorite Dining Halls</h2>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="evk-button" class="btn-action" onclick="navigateTo('evk')">
+                        <i class="fas fa-cutlery"></i> EVERYBODY'S KITCHEN
+                    </button>
+                    <button id="village-button" class="btn-action" onclick="navigateTo('village')">
+                        <i class="fas fa-cutlery"></i> USC VILLAGE DINING HALL
+                    </button>
+                    <button id="parkside-button" class="btn-action" onclick="navigateTo('parkside')">
+                        <i class="fas fa-cutlery"></i> PARKSIDE KITCHEN AND GRILL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dining Hall Listings -->
+        <div class="dining-halls">
+            <div class="container">
+                <!-- Everybody's Kitchen -->
+                <div class="dining-hall" id="evk-section" onclick="navigateTo('evk')">
+                    <div class="dining-hall-header">
+                        <h3 class="dining-hall-name">Everybody's Kitchen</h3>
+                        <div class="dining-hall-info">
+                            <span class="rating"><i class="fas fa-star"></i> 4.25</span>
+                            <span class="traffic"><i class="fas fa-chart-simple"></i> High Traffic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USC Village Dining Hall -->
+                <div class="dining-hall" id="village-section" onclick="navigateTo('village')">
+                    <div class="dining-hall-header">
+                        <h3 class="dining-hall-name">USC Village Dining Hall</h3>
+                        <div class="dining-hall-info">
+                            <span class="rating"><i class="fas fa-star"></i> 3.97</span>
+                            <span class="traffic"><i class="fas fa-chart-simple"></i> Medium Traffic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parkside Kitchen and Grill -->
+                <div class="dining-hall" id="parkside-section" onclick="navigateTo('parkside')">
+                    <div class="dining-hall-header">
+                        <h3 class="dining-hall-name">Parkside Kitchen and Grill</h3>
+                        <div class="dining-hall-info">
+                            <span class="rating"><i class="fas fa-star"></i> 4.15</span>
+                            <span class="traffic"><i class="fas fa-chart-simple"></i> Low Traffic</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include the userLoginState.js script -->
+    <script src="userLoginState.js"></script>
+    
+    <script>
+        function navigateTo(page){
+            if (page === 'evk') {
+                window.location.href = 'EVK/EVK.html';
+            } else if (page === 'village') {
+                window.location.href = 'village/village.html';
+            } else if (page === 'parkside') {
+                window.location.href = 'parkside/parkside.html';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login status and update UI accordingly
+            checkLoginStatus();
+        });
+    </script>
+</body>
+</html>
