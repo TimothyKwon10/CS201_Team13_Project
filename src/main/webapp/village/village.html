@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>DINING HALL PAGE</title>
+	<link rel = "stylesheet" href = "village.css">
+</head>
+
+<body onload = 'menuSetup()'>
+    <div id = "page">
+        <div id = "header">
+            <div id = "leftHeader" onclick="navigateTo('homes')">
+                <img src = "/images/USC_seal.png" id = "homeIcon">
+                <h1>Home</h1>
+            </div>
+            <div id  = "rightHeader">
+                <input type = "button" value = "Everybody's Kitchen" class = "headerButton" id = "EVKButton" onclick="navigateTo('evk')">
+                <input type = "button" value = "USC Village Dining Hall" class = "headerButton" id = "villageButton" onclick="navigateTo('village')">
+                <input type = "button" value = "Parkside Restaurant and Grill" class = "headerButton" id = "parksideButton" onclick="navigateTo('parkside')">
+            </div>  
+        </div>
+        <div id = "hero">
+            <h1 id = heroText>USC Village Dining Hall</h1>
+            <img src = "/images/whiteArrow.png" id = "downArrow">
+        </div>
+        <div class = "centering">
+            <div id = "searchSection">
+                <form id = "form">
+                    <button type = "submit" class = "searchButton" id = "searchIcon"><img src = "/images/search_icon.png" class = "searchIMG"></button> <!-- probably needs a name for backend access-->
+                    <input type = "search" placeholder = "Search for a meal" id = "searchBar">
+                    <button type = "button" class = "searchButton" id = "clearButton"><img src = "/images/clear_icon.png" class = "searchIMG"></button>
+                </form>
+                <div id = "dropdown">
+                    <!--DROP DOWN MENU GOES HERE-->
+                </div>
+            </div>
+        </div>
+        <div class = "centering"> <!--DINING HALL INFO-->
+            <div id = "diningHallInfo"> 
+                <div id = "leftSection">
+                    <h1 class = "centering" id  = "descriptionHeader">A Little About Village</h1>
+                    <p> Nestled within USC Village, our new dining hall compliments the vision of the university’s 
+                        residential college experience which combines living, learning and community to 2,500 students. 
+                        USC Village is one of the largest developments in South LA history. The new dining hall is visually 
+                        impressive – collegiate gothic architecture, high ceilings, dramatic lighting and beautiful stained-glass 
+                        windows accent the 8,000-square foot space with seating for over 400 guests. <br><br>
+
+                        Chef Nathan Martinez has created an equally impressive menu to support the USC Hospitality 
+                        Food Philosophy, featuring a wide variety of dining options including USC’s first ever 100% 
+                        self-contained plant-based station (vegan friendly). Other stations include a full salad, sandwich 
+                        and soup bar, dessert station featuring made to order sweet and savory crepes and hand scooped ice cream. <br><br>
+                        
+                        Each residential community is anchored by an all-you-care to eat dining venue. Specific meal plan 
+                        participants enjoy unlimited access to all three dining halls. Each offers a different culinary 
+                        experience appealing to a variety of dining preferences and nutritional lifestyles of our diverse 
+                        student population.</p>
+                </div>    
+                <div id = "rightSection">
+                    <div id = "menu">
+                        <h1 class = "centering">Today's Menu</h1>
+                        <ul id = "menuEntry">
+                            menu items for today go here
+                        </ul>
+                    </div>
+                    <div id = "crowdSection">
+                        <!-- <img src = "images/crowd.png" id = "crowdIMG"> -->
+                        <h1 id = "crowdTitle">How Packed Is Village?</h1>
+                        <div id = "crowdLVL">
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                            <span class = "crowdCircle">&#9675;</span>
+                        </div>
+                        <p id = "crowdDescription">(The dining hall is "moderately busy")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class = "centering">
+            <div id = "imgAndReviews">
+                <div id = "reviewSection"> 
+                    <div id = "reviewHeaderPortion">
+                        <h1 id = "reviewsHeader">Reviews</h1>
+                        <h1 id = "overallRating">4.0</h1>
+                    </div>
+                    <div id = "existingReviews">
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                        Placeholder: wow evk sucks like crazy<br><br>
+                    </div>
+                    <form id = "rate" class = "centering">
+                        <textarea id="inputText" placeholder="Please leave a review:" required></textarea>
+                        <div id = "starContainer">
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "1">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "2">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "3">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "4">&#9733;</span>
+                            </div>
+                            <div class = "hitBox">
+                                <span class = "reviewStar" data-value = "5">&#9733;</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" required>
+                        <input type = "submit" id = "submitButton">
+                        <div id = "reviewError">
+                            <!--Error message goes here-->
+                            PLEASE SUBMIT A STAR RATING
+                        </div>
+                    </form>
+                </div>
+                <img src = "/images/evk_food.png" id = "foodIMG">
+            </div>
+        </div>
+        <div id = "bottomSection">
+            <h1 id = "bottomHeader">Weekly Menu Calendar</h1>
+            <div class="calendar" id="calendar"></div>
+        </div>
+    </div>
+    <script src = "village.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="register-container">
+    <h2>Register</h2>
+
+<form id="registerForm" action="RegisterServlet" method="post" novalidate>
+    <div class="form-group">
+        <input type="text" id="usc_id" name="usc_id" placeholder="USC ID" required>
+        <small class="error-message" id="uscIdError"></small>
+    </div>
+
+    <div class="form-group">
+        <input type="text" id="first_name" name="first_name" placeholder="First Name" required>
+        <small class="error-message" id="firstNameError"></small>
+    </div>
+
+    <div class="form-group">
+        <input type="text" id="last_name" name="last_name" placeholder="Last Name" required>
+        <small class="error-message" id="lastNameError"></small>
+    </div>
+
+    <div class="form-group">
+        <input type="email" id="email" name="email" placeholder="Email address" required>
+        <small class="error-message" id="emailError"></small>
+    </div>
+
+    <div class="form-group">
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <small class="error-message" id="passwordError"></small>
+    </div>
+
+    <button type="submit">Register</button>
+</form>
+
+
+    <p>Already have an account? <a href="loginPage.html">Login</a></p>
+</div>
+
+
+</body>
+</html>
