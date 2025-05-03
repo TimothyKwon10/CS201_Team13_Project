@@ -8,8 +8,381 @@ const form = document.getElementById("form");
 const searchSection = document.getElementById("searchSection")
 const clearButton = document.getElementById("clearButton");
 
-const testData = ["lasagna", "ramen", "ragu", "pasta", "steak", "bulgogi", "ratatouille", "ramune", "raz", "rain", "ranky", "RAM", "rapper", "raont"];
-//NEED DATABASE FOR POTENTIAL MENU ITEMS FOR EACH DINING HALL ^
+// Initialize everything when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Check login status
+    const isLoggedIn = checkLoginStatus();
+    
+    // Setup menu and calendar
+    menuSetup();
+    
+    // Setup search functionality
+    setupSearchFunctionality();
+    
+    // Setup star review functionality
+    setupStarReviewFunctionality();
+    
+    // Setup crowd level indicators
+    setupCrowdLevelIndicators();
+    
+    // If logged in, fetch favorites from server
+    if (isLoggedIn) {
+        fetchFavoritesFromServer();
+    }
+});
+
+// Check login status and update UI
+function checkLoginStatus() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    // Update header UI based on login status
+    updateHeaderLoginStatus(isLoggedIn, user);
+    
+    // Enable or disable favorite functionality based on login status
+    if (isLoggedIn) {
+        enableFavorites();
+        updateFavoritesDisplay();
+    } else {
+        disableFavorites();
+    }
+    
+    return isLoggedIn;
+}
+
+// Update favorites display based on saved favorites
+function updateFavoritesDisplay() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+    if (!isLoggedIn) return;
+    
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.uscId) return;
+    
+    // Get user's favorites
+    const favorites = JSON.parse(localStorage.getItem('userFavorites') || '{}');
+    const userFavorites = favorites[user.uscId] || [];
+    
+    // Update all star buttons in calendar items
+    document.querySelectorAll('.menu-item .star-btn').forEach(btn => {
+        const menuItem = btn.parentNode.querySelector('span').textContent.trim();
+        
+        if (userFavorites.includes(menuItem)) {
+            // This item is a favorite
+            btn.innerHTML = '<i class="fas fa-heart"></i>'; // filled heart
+            btn.style.color = "#990001";
+        } else {
+            // This item is not a favorite
+            btn.innerHTML = '<i class="far fa-heart"></i>'; // empty heart
+            btn.style.color = "#999";
+        }
+    });
+}
+
+// Update header to show login status
+function updateHeaderLoginStatus(isLoggedIn, user) {
+    const rightHeader = document.getElementById('rightHeader');
+    
+    // If logged in, show user info and logout button
+    if (isLoggedIn && user) {
+        // Check if we already added user info elements
+        if (!document.getElementById('userInfo')) {
+            // Create user info and logout button
+            const userInfo = document.createElement('div');
+            userInfo.id = 'userInfo';
+            userInfo.style.display = 'flex';
+            userInfo.style.alignItems = 'center';
+            userInfo.style.gap = '1em';
+            
+            // Welcome message
+            const welcomeMsg = document.createElement('span');
+            welcomeMsg.textContent = `Welcome, ${user.firstName || 'User'}`;
+            welcomeMsg.style.color = 'white';
+            welcomeMsg.style.fontFamily = 'Georgia';
+            
+            // Logout button
+            const logoutBtn = document.createElement('button');
+            logoutBtn.textContent = 'LOGOUT';
+            logoutBtn.className = 'headerButton';
+            logoutBtn.id = 'logoutBtn';
+            logoutBtn.addEventListener('click', logout);
+            
+            // Add elements to the header
+            userInfo.appendChild(welcomeMsg);
+            userInfo.appendChild(logoutBtn);
+            
+            // Add user info to the right of the navigation buttons
+            rightHeader.appendChild(userInfo);
+        }
+    } else {
+        // If not logged in, remove user info if it exists
+        const userInfo = document.getElementById('userInfo');
+        if (userInfo) {
+            rightHeader.removeChild(userInfo);
+        }
+        
+        // Add login button if it doesn't exist
+        if (!document.getElementById('loginBtn')) {
+            const loginBtn = document.createElement('button');
+            loginBtn.textContent = 'LOGIN';
+            loginBtn.className = 'headerButton';
+            loginBtn.id = 'loginBtn';
+            loginBtn.addEventListener('click', () => window.location.href = '../loginPage.html');
+            
+            rightHeader.appendChild(loginBtn);
+        }
+    }
+}
+
+// Enable favorite functionality for logged-in users
+function enableFavorites() {
+    // Enable favoriting across all star buttons in search dropdown
+    enableDropdownFavorites();
+    
+    // Enable favoriting in meal tags
+    const mealTags = document.querySelectorAll('.meal-tag');
+    if (mealTags.length > 0) {
+        mealTags.forEach(tag => {
+            // Remove disabled class
+            tag.classList.remove('disabled');
+            
+            // Remove any existing event listeners by cloning and replacing
+            const newTag = tag.cloneNode(true);
+            tag.parentNode.replaceChild(newTag, tag);
+            
+            // Add click event to toggle favorite
+            newTag.addEventListener('click', function() {
+                const heartIcon = this.querySelector('i');
+                
+                if (heartIcon.classList.contains('far')) {
+                    // Change to filled heart (favorited)
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
+                    this.classList.add('favorited');
+                    
+                    // Save favorite
+                    saveFavorite(this.textContent.trim(), true);
+                } else {
+                    // Change to empty heart (unfavorited)
+                    heartIcon.classList.remove('fas');
+                    heartIcon.classList.add('far');
+                    this.classList.remove('favorited');
+                    
+                    // Remove favorite
+                    saveFavorite(this.textContent.trim(), false);
+                }
+            });
+        });
+    }
+    
+    // Enable favoriting in calendar menu items
+    enableCalendarFavorites();
+    
+    // Make review form accessible
+    if (document.getElementById('rate')) {
+        document.getElementById('inputText').disabled = false;
+        document.getElementById('inputText').placeholder = "Please leave a review:";
+        document.getElementById('submitButton').disabled = false;
+    }
+}
+
+// Enable favoriting in search dropdown
+function enableDropdownFavorites() {
+    // This will be called whenever the dropdown is generated
+    document.querySelectorAll('.star-btn').forEach(btn => {
+        // Remove any existing event listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add the favoriting functionality
+        newBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent other click events
+            
+            const menuItem = this.parentNode.querySelector('span, p').textContent.trim();
+            
+            if (this.innerHTML.includes("far fa-heart")) {
+                this.innerHTML = '<i class="fas fa-heart"></i>'; // filled heart
+                this.style.color = "#990001";
+                saveFavorite(menuItem, true);
+            } else {
+                this.innerHTML = '<i class="far fa-heart"></i>'; // empty heart
+                this.style.color = "#999";
+                saveFavorite(menuItem, false);
+            }
+        });
+        
+        // Set cursor style
+        newBtn.style.cursor = 'pointer';
+    });
+}
+
+// Enable favoriting in calendar menu items
+function enableCalendarFavorites() {
+    document.querySelectorAll('.menu-item .star-btn').forEach(btn => {
+        // Remove any existing event listeners by cloning and replacing
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add the favoriting functionality
+        newBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent other click events
+            
+            const menuItem = this.parentNode.querySelector('span').textContent.trim();
+            
+            if (this.innerHTML.includes("far fa-heart")) {
+                // Change to filled heart (favorited)
+                this.innerHTML = '<i class="fas fa-heart"></i>'; // filled heart
+                this.style.color = "#990001";
+                saveFavorite(menuItem, true);
+            } else {
+                // Change to empty heart (unfavorited)
+                this.innerHTML = '<i class="far fa-heart"></i>'; // empty heart
+                this.style.color = "#999";
+                saveFavorite(menuItem, false);
+            }
+        });
+        
+        // Set cursor style
+        newBtn.style.cursor = 'pointer';
+    });
+}
+
+// Disable favorite functionality for logged-out users
+function disableFavorites() {
+    // Disable favoriting in meal tags
+    const mealTags = document.querySelectorAll('.meal-tag');
+    if (mealTags.length > 0) {
+        mealTags.forEach(tag => {
+            // Add disabled class
+            tag.classList.add('disabled');
+            
+            // Remove existing event listeners by cloning and replacing
+            const newTag = tag.cloneNode(true);
+            tag.parentNode.replaceChild(newTag, tag);
+            
+            // Add click event to show login prompt
+            newTag.addEventListener('click', function() {
+                showLoginPrompt();
+            });
+        });
+    }
+    
+    // Disable favoriting across all star buttons in search dropdown
+    document.querySelectorAll('.star-btn').forEach(btn => {
+        // Remove any existing event listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add the login prompt functionality
+        newBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent dropdown item click
+            showLoginPrompt();
+        });
+        
+        // Set cursor style
+        newBtn.style.cursor = 'not-allowed';
+    });
+    
+    // Disable favoriting in calendar menu items
+    document.querySelectorAll('.menu-item .star-btn').forEach(btn => {
+        // Remove any existing event listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add the login prompt functionality
+        newBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showLoginPrompt();
+        });
+        
+        // Set cursor style
+        newBtn.style.cursor = 'not-allowed';
+    });
+    
+    // Make review form inaccessible
+    if (document.getElementById('rate')) {
+        document.getElementById('inputText').disabled = true;
+        document.getElementById('inputText').placeholder = "Please log in to leave a review";
+        document.getElementById('submitButton').disabled = true;
+    }
+}
+
+// Show login prompt for logged-out users
+function showLoginPrompt() {
+    // Save the current page URL to redirect back after login
+    localStorage.setItem('redirectUrl', window.location.href);
+    
+    // Redirect to login page with correct path
+        window.location.href = '../loginPage.html';
+}
+
+// Save favorite to database/localStorage
+function saveFavorite(mealName, isFavorite) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    if (!user.uscId) {
+        console.error('User not logged in or user ID not available');
+        return;
+    }
+    
+    console.log(`User ${user.uscId} ${isFavorite ? 'favorited' : 'unfavorited'} "${mealName}"`);
+    
+    // Store favorites in localStorage
+    let favorites = JSON.parse(localStorage.getItem('userFavorites') || '{}');
+    
+    // Initialize user favorites if they don't exist
+    if (!favorites[user.uscId]) {
+        favorites[user.uscId] = [];
+    }
+    
+    if (isFavorite) {
+        // Add to favorites if not already there
+        if (!favorites[user.uscId].includes(mealName)) {
+            favorites[user.uscId].push(mealName);
+        }
+    } else {
+        // Remove from favorites
+        favorites[user.uscId] = favorites[user.uscId].filter(item => item !== mealName);
+    }
+    
+    // Save back to localStorage
+    localStorage.setItem('userFavorites', JSON.stringify(favorites));
+    
+    // Make AJAX call to update server-side database
+    sendFavoriteToServer(user.uscId, mealName, isFavorite);
+}
+
+// Send favorite data to server
+function sendFavoriteToServer(uscId, mealName, isFavorite) {
+    const formData = new URLSearchParams();
+    formData.append('usc_id', uscId);
+    formData.append('meal_name', mealName);
+    formData.append('is_favorite', isFavorite ? '1' : '0');
+    
+    fetch('FavoriteMealServlet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => response.json())
+    .then(data => console.log('Favorite saved:', data))
+    .catch(error => console.error('Error saving favorite:', error));
+}
+
+// Logout function
+function logout() {
+    // Clear user data from localStorage
+    localStorage.removeItem('user');
+    localStorage.removeItem('isLoggedIn');
+    
+    // Optional: Display logout message
+    alert('You have been logged out successfully');
+    
+    // Redirect to home page
+    window.location.href = '../HomePage.html';
+}
 
 //----------------------------------------------------HERO SCROLL FUNCTIONALITY----------------------------------------------------//
 
@@ -24,100 +397,173 @@ window.addEventListener('scroll', () => {
 
 //----------------------------------------------------CREATE DROPDOWN FUNCTIONALITY----------------------------------------------------//
 
-searchBar.addEventListener('input', () => {
-    dropdown.innerHTML = "";
-    form.style.borderBottom = "none";
-
-    const input = searchBar.value.toLowerCase();
-
-    if (input === "") {
-        dropdown.style.display = "none";
-        return;
-    }
-
-    const filter = testData.filter(testData => testData.toLowerCase().includes(input));
-
-    if (filter.length === 0) {
-        const dropdownItem = document.createElement("div");
-        dropdownItem.textContent = "There are no menu items with that name.";
-        dropdownItem.style.color = "#757575";
-        dropdownItem.className = "dropdownItem";
-        dropdown.appendChild(dropdownItem);
-    } else {
-        for (let i = 0; i < filter.length; i++) {
-            const dropdownItem = document.createElement("div"); 
-            dropdownItem.className = "dropdownItem";
-
-            const text = document.createElement("p");
-            text.textContent = filter[i];
-            text.className = "dropdownSizing";
-            
-            const favoriteIcon = document.createElement("button");
-            favoriteIcon.innerHTML = "&#9734;"; // empty star
-            favoriteIcon.className = "dropdownSizing star-btn";
-            favoriteIcon.setAttribute('aria-label', 'Favorite');
-
-            // ✅ Add toggle behavior just like the calendar
-            favoriteIcon.addEventListener('click', () => {
-                if (favoriteIcon.innerHTML === "☆") {
-                    favoriteIcon.innerHTML = "&#9733;"; // filled star
-                    favoriteIcon.style.color = "#f0a500";
-                } else {
-                    favoriteIcon.innerHTML = "&#9734;";
-                    favoriteIcon.style.color = "#999";
-                }
-            });
-
-            dropdownItem.appendChild(text);
-            dropdownItem.appendChild(favoriteIcon);
-            dropdown.appendChild(dropdownItem);
-        }
-    }
-
-    form.style.borderBottom = "2px solid lightgray";
-    dropdown.style.display = "block";
-});
-
-//----------------------------------------------------SUBMIT SEARCH FUNCTIONALITY----------------------------------------------------//
-
-form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    searchBar.blur();
-
-    if (searchBar.value === "") {
-        const dropdownItem = document.createElement("div");
-        dropdownItem.textContent = "Please search for a menu item.";
-        dropdownItem.style.color = "#757575"
-        dropdownItem.className = "dropdownItem";
-
-        dropdown.appendChild(dropdownItem);
-        form.style.borderBottom = "2px solid lightgray";
-        dropdown.style.display = "block";
-    }
-
-    searchSection.style.border = "4px solid #990001";
-});
-
-//----------------------------------------------------CLEAR SEARCH FUNCTIONALITY----------------------------------------------------//
-
-function clearSearch() {
-    searchBar.value = "";
-    searchSection.style.border = "2px solid lightgray";
-    dropdown.innerHTML = "";
-    form.style.borderBottom = "none";
+// Add a function to get all menu items from the current menu
+function getAllMenuItems() {
+    const menuItems = [];
+    const menuEntry = document.getElementById('menuEntry');
+    const menuSpans = menuEntry.querySelectorAll('.menu-item span');
+    
+    menuSpans.forEach(span => {
+        menuItems.push(span.textContent.trim());
+    });
+    
+    return menuItems;
 }
 
-clearButton.addEventListener('click', (event) => {
-    event.preventDefault();
-
-    clearSearch();
-});
-
-document.addEventListener('click', (event) => {
-    if (!form.contains(event.target) && !dropdown.contains(event.target)) {
+// Update the search functionality
+function setupSearchFunctionality() {
+    const searchBar = document.getElementById('searchBar');
+    const dropdown = document.getElementById('dropdown');
+    const clearButton = document.getElementById('clearButton');
+    const form = document.getElementById('form');
+    const searchSection = document.getElementById('searchSection');
+    
+    // Prevent any form submission
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    });
+    
+    // Clear search when clicking the clear button
+    clearButton.addEventListener('click', (e) => {
+        e.preventDefault();
         clearSearch();
-    }
+    });
+    
+    // Handle search input
+    searchBar.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        
+        // Clear previous results
+        dropdown.innerHTML = '';
+
+        if (searchTerm.length > 0) {
+            // Get all menu items from the page
+            const menuItems = new Set(); // Use Set to avoid duplicates
+            
+            // Get items from menu entry (today's menu)
+            const menuEntry = document.getElementById('menuEntry');
+            if (menuEntry) {
+                menuEntry.querySelectorAll('.menu-item span').forEach(span => {
+                    menuItems.add(span.textContent.trim());
+                });
+            }
+            
+            // Get items from calendar (weekly menu)
+            const calendar = document.getElementById('calendar');
+            if (calendar) {
+                calendar.querySelectorAll('.meal-item span').forEach(span => {
+                    menuItems.add(span.textContent.trim());
+                });
+            }
+            
+            // Convert Set to Array and filter
+            const filteredItems = Array.from(menuItems).filter(item => 
+                item.toLowerCase().includes(searchTerm)
+            );
+            
+            // Display results
+            if (filteredItems.length > 0) {
+                filteredItems.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'dropdown-item';
+
+                    const span = document.createElement('span');
+                    span.textContent = item;
+            
+                    const starBtn = document.createElement('button');
+                    starBtn.className = 'star-btn';
+                    
+                    // Check if item is favorited
+                    const isLoggedIn = checkLoginStatus();
+                    if (isLoggedIn) {
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        if (!user.uscId) {
+                            showLoginPrompt();
+                            return;
+                        }
+                        
+                        // Add click event to toggle favorite
+                        starBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const heartIcon = this.querySelector('i');
+                            const isFavorited = heartIcon.classList.contains('fas');
+                            
+                            // Send to FavoriteMealServlet
+                            const formData = new URLSearchParams();
+                            formData.append('usc_id', user.uscId);
+                            formData.append('meal_name', item);
+                            formData.append('is_favorite', !isFavorited ? '1' : '0');
+                            
+                            fetch('../FavoriteMealServlet', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: formData.toString()
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    if (isFavorited) {
+                                        heartIcon.classList.remove('fas');
+                                        heartIcon.classList.add('far');
+                                        this.style.color = '#999';
+                                    } else {
+                                        heartIcon.classList.remove('far');
+                                        heartIcon.classList.add('fas');
+                                        this.style.color = '#990001';
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error updating favorite:', error);
 });
+                        });
+                    } else {
+                        starBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            showLoginPrompt();
+                        });
+                    }
+                    
+                    div.appendChild(span);
+                    div.appendChild(starBtn);
+                    dropdown.appendChild(div);
+                });
+                dropdown.classList.add('visible');
+            } else {
+                const noResults = document.createElement('div');
+                noResults.className = 'dropdown-item';
+                noResults.textContent = 'No matching items found';
+                noResults.style.color = '#757575';
+                dropdown.appendChild(noResults);
+                dropdown.classList.add('visible');
+    }
+        } else {
+            dropdown.classList.remove('visible');
+        }
+});
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchBar.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('visible');
+}
+    });
+}
+
+function clearSearch() {
+    const searchBar = document.getElementById('searchBar');
+    const dropdown = document.getElementById('dropdown');
+    
+    if (searchBar) searchBar.value = '';
+    if (dropdown) {
+        dropdown.innerHTML = '';
+        dropdown.classList.remove('visible');
+    }
+}
 
 //----------------------------------------------------STAR REVIEW FUNCTIONALITY----------------------------------------------------//
 
@@ -130,6 +576,13 @@ let lockedRating = 0;
 
 hitBoxes.forEach(hitbox => {
     hitbox.addEventListener('click', () => {
+        // Check if user is logged in before allowing rating
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        if (!isLoggedIn) {
+            showLoginPrompt();
+            return;
+        }
+        
         const star = hitbox.querySelector('.reviewStar');
         const value = star.getAttribute("data-value");
         starInput.value = value;
@@ -160,22 +613,94 @@ function updateStars(value) {
 }
 
 ratingForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    if (!isLoggedIn) {
+        showLoginPrompt();
+        return;
+    }
+    
     if (!starInput.value) {
-        event.preventDefault();
         const reviewError = document.getElementById("reviewError");
         reviewError.style.display = "block";
     }
     else {
-        event.preventDefault();
-
-        inputText.value = "";
-        starInput.value = null;
-        lockedRating = 0;
-        reviewStar.forEach(s => {
-            s.classList.remove('selected');
-        });
+        // Get user data for the review submission
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        // If we have a valid user with USC ID
+        if (user && user.uscId) {
+            // Prepare review data
+            const reviewData = {
+                usc_id: user.uscId,
+                hall_id: 1, // EVK ID (adjust as needed)
+                rating: starInput.value,
+                comment: inputText.value
+            };
+            
+            // Submit review to server
+            submitReview(reviewData);
+            
+            // Clear form
+            inputText.value = "";
+            starInput.value = null;
+            lockedRating = 0;
+            reviewStar.forEach(s => {
+                s.classList.remove('selected');
+            });
+        } else {
+            showLoginPrompt();
+        }
     }
 });
+
+// Submit review to server
+function submitReview(reviewData) {
+    // Create form data from review object
+    const formData = new URLSearchParams();
+    Object.keys(reviewData).forEach(key => {
+        formData.append(key, reviewData[key]);
+    });
+    
+    // Send review to server
+    fetch('../ReviewsServlet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        // Reload reviews after successful submission
+        loadReviews();
+    })
+    .catch(error => {
+        console.error('Error submitting review:', error);
+        alert('Failed to submit review. Please try again.');
+    });
+}
+
+// Load reviews from server
+function loadReviews() {
+    // This function would fetch reviews from the server
+    console.log('Loading reviews...');
+    
+    // You would implement something like this:
+    /*
+    fetch('../GetReviewsServlet?hall_id=1') // 1 for EVK
+        .then(response => response.json())
+        .then(reviews => {
+            displayReviews(reviews);
+        })
+        .catch(error => {
+            console.error('Error loading reviews:', error);
+        });
+    */
+}
 
 document.addEventListener('click', (event) => {
     if (!ratingForm.contains(event.target)) {
@@ -184,97 +709,445 @@ document.addEventListener('click', (event) => {
     }
 });
 
+//----------------------------------------------------FAVORITE FUNCTIONALITY----------------------------------------------------//
+
+// Enable favorite functionality for logged-in users
+function enableFavorites() {
+    // Enable favoriting across all star buttons
+    document.querySelectorAll('.star-btn').forEach(btn => {
+        // Remove any existing event listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add the favoriting functionality
+        newBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent other click events
+            
+            const menuItem = this.parentNode.querySelector('span, p').textContent.trim();
+            
+            if (this.innerHTML.includes("far fa-heart")) {
+                this.innerHTML = '<i class="fas fa-heart"></i>'; // filled heart
+                this.style.color = "#990001";
+                saveFavorite(menuItem, true);
+            } else {
+                this.innerHTML = '<i class="far fa-heart"></i>'; // empty heart
+                this.style.color = "#999";
+                saveFavorite(menuItem, false);
+            }
+        });
+        
+        // Set cursor style
+        newBtn.style.cursor = 'pointer';
+    });
+    
+    // Make review form accessible
+    if (ratingForm) {
+        inputText.disabled = false;
+        inputText.placeholder = "Please leave a review:";
+    }
+}
+
+// Disable favorite functionality for logged-out users
+function disableFavorites() {
+    // Disable favoriting across all star buttons
+    document.querySelectorAll('.star-btn').forEach(btn => {
+        // Remove any existing event listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add the login prompt functionality
+        newBtn.addEventListener('click', showLoginPrompt);
+        
+        // Set cursor style
+        newBtn.style.cursor = 'not-allowed';
+    });
+    
+    // Make review form inaccessible
+    if (ratingForm) {
+        inputText.disabled = true;
+        inputText.placeholder = "Please log in to leave a review";
+    }
+}
+
+// Show login prompt when user tries to use features when logged out
+function showLoginPrompt(e) {
+    if (e) e.stopPropagation();
+    
+    // Show login prompt with option to redirect
+    if (confirm('You need to be logged in to use this feature. Would you like to log in now?')) {
+        window.location.href = '../loginPage.html';
+    }
+}
+
+// Save favorite to server/local storage
+function saveFavorite(menuItem, isFavorite) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    if (!user.uscId) {
+        console.error('User not logged in or user ID not available');
+        return;
+    }
+    
+    console.log(`User ${user.uscId} ${isFavorite ? 'favorited' : 'unfavorited'} "${menuItem}"`);
+    
+    // Here you would send this data to your server to save in the database
+    // For now, we'll store favorites in localStorage as an example
+    let favorites = JSON.parse(localStorage.getItem('favorites') || '{}');
+    
+    // Initialize user favorites if they don't exist
+    if (!favorites[user.uscId]) {
+        favorites[user.uscId] = [];
+    }
+    
+    if (isFavorite) {
+        // Add to favorites if not already there
+        if (!favorites[user.uscId].includes(menuItem)) {
+            favorites[user.uscId].push(menuItem);
+        }
+    } else {
+        // Remove from favorites
+        favorites[user.uscId] = favorites[user.uscId].filter(item => item !== menuItem);
+    }
+    
+    // Save back to localStorage
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    
+    // Example AJAX call you would use to save to the database:
+    /*
+    fetch('../SaveFavoriteServlet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `usc_id=${user.uscId}&menu_item=${encodeURIComponent(menuItem)}&is_favorite=${isFavorite}`
+    })
+    .then(response => response.json())
+    .then(data => console.log('Favorite saved:', data))
+    .catch(error => console.error('Error saving favorite:', error));
+    */
+}
+
 //----------------------------------------------------CALENDAR FUNCTIONALITY----------------------------------------------------//
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const placeholderMenu = ['Grilled Chicken', 'Caesar Salad', 'Pasta Primavera'];
 
-const calendar = document.getElementById('calendar');
+// Setup calendar functionality
+function setupCalendar() {
+    // Clear calendar first
+    const calendar = document.getElementById('calendar');
+    if (!calendar) {
+        console.error("Calendar element not found");
+        return;
+    }
+    
+    calendar.innerHTML = '';
+    
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    let userFavorites = [];
+    
+    // Get user favorites if logged in
+    if (isLoggedIn && user.uscId) {
+        const favorites = JSON.parse(localStorage.getItem('userFavorites') || '{}');
+        userFavorites = favorites[user.uscId] || [];
+    }
+    
+    // Create calendar layout
+    days.forEach(day => {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'day';
 
-days.forEach(day => {
-  const dayDiv = document.createElement('div');
-  dayDiv.className = 'day';
+        const title = document.createElement('h3');
+        title.textContent = day;
+        dayDiv.appendChild(title);
 
-  const title = document.createElement('h3');
-  title.textContent = day;
-  dayDiv.appendChild(title);
+        // Add menu items for this day
+        placeholderMenu.forEach(item => {
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
 
-  placeholderMenu.forEach(item => {
-    const menuItem = document.createElement('div');
-    menuItem.className = 'menu-item';
+            const itemText = document.createElement('span');
+            itemText.textContent = item;
 
-    const itemText = document.createElement('span');
-    itemText.textContent = item;
+            const starBtn = document.createElement('button');
+            starBtn.className = 'star-btn';
+            starBtn.setAttribute('aria-label', 'Favorite');
+            
+            // Check if this item is in user's favorites
+            const isFavorite = userFavorites.includes(item);
+            
+            if (isFavorite) {
+                starBtn.innerHTML = '<i class="fas fa-heart"></i>'; // Filled heart
+                starBtn.style.color = '#990001';
+            } else {
+                starBtn.innerHTML = '<i class="far fa-heart"></i>'; // Empty heart
+                starBtn.style.color = '#999';
+            }
 
-    const starBtn = document.createElement('button');
-    starBtn.innerHTML = '&#9734;'; // Empty star ☆
-    starBtn.className = 'star-btn';
-    starBtn.setAttribute('aria-label', 'Favorite');
+            menuItem.appendChild(itemText);
+            menuItem.appendChild(starBtn);
+            dayDiv.appendChild(menuItem);
+        });
 
-    // Toggle between empty (☆) and filled (★) star
-    starBtn.addEventListener('click', () => {
-      if (starBtn.innerHTML === '☆') {
-        starBtn.innerHTML = '&#9733;'; // Filled star ★
-        starBtn.style.color = '#f0a500';
-      } else {
-        starBtn.innerHTML = '&#9734;';
-        starBtn.style.color = '#999';
-      }
+        calendar.appendChild(dayDiv);
     });
+    
+    // Update star button functionality based on login status
+    if (isLoggedIn) {
+        enableCalendarFavorites();
+    } else {
+        disableFavorites();
+    }
+}
 
-    menuItem.appendChild(itemText);
-    menuItem.appendChild(starBtn);
-    dayDiv.appendChild(menuItem);
-  });
-
-  calendar.appendChild(dayDiv);
-});
-
-function navigateTo(page){
-	if (page === 'evk') {
-		window.location.href = '../EVK/EVK.html';
+function navigateTo(page) {
+    if (page === 'home') {
+        window.location.href = '../HomePage.html';
+    } else if (page === 'evk') {
+        window.location.href = 'EVK.html';
 	} else if (page === 'village') {
 		window.location.href = '../village/village.html';
 	} else if (page === 'parkside') {
 		window.location.href = '../parkside/parkside.html';
-	} else if(page === 'homes'){
-		window.location.href = '../HomePage.html';
 	}
 }
 
 function menuSetup() {
-	event.preventDefault();
-	const url = window.location.origin + "/DiningHall_Backend/MenuSelectServlet";
-	const menuEntry = document.getElementById('menuEntry');
+    // Fetch menu data from the server with the correct URL
+    fetch('../MenuSelectServlet')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data || !data.evk) {
+                throw new Error('Invalid menu data received');
+            }
+            // Populate today's menu
+            populateTodayMenu(data.evk[0]); // First index is today's menu
+            
+            // Setup the weekly calendar
+            setupWeeklyCalendar(data.evk);
+            
+            // Enable favorites if user is logged in
+            if (checkLoginStatus()) {
+                enableFavorites();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching menu:', error);
+            document.getElementById('menuEntry').innerHTML = '<p class="error-message">Failed to load menu data</p>';
+            // Also log the specific error for debugging
+            console.log('Specific error:', error.message);
+        });
+}
 
-	fetch(url, { method: 'GET' })
-		.then(function(response) {
-			if (!response.ok) {
-				return response.text().then(function(result) {
-					console.error("Server responded with error:", result);
+function populateTodayMenu(menuData) {
+	const menuEntry = document.getElementById('menuEntry');
+    menuEntry.innerHTML = ''; // Clear existing content
+    
+    // Create HTML for each menu category
+    menuData.forEach(category => {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'menu-category';
+        
+        // Add category title
+        const titleH2 = document.createElement('h2');
+        titleH2.className = 'category-title';
+        titleH2.textContent = category.title;
+        categoryDiv.appendChild(titleH2);
+        
+        // Add menu items
+        const itemsDiv = document.createElement('div');
+        itemsDiv.className = 'menu-items';
+        
+        category.meals.forEach(meal => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'menu-item';
+            
+            const mealSpan = document.createElement('span');
+            mealSpan.textContent = meal;
+            
+            const starBtn = document.createElement('button');
+            starBtn.className = 'star-btn';
+            starBtn.innerHTML = '<i class="far fa-heart"></i>'; // Empty heart
+            
+            itemDiv.appendChild(mealSpan);
+            itemDiv.appendChild(starBtn);
+            itemsDiv.appendChild(itemDiv);
+        });
+        
+        categoryDiv.appendChild(itemsDiv);
+        menuEntry.appendChild(categoryDiv);
+    });
+}
+
+function setupWeeklyCalendar(weeklyMenu) {
+    const calendar = document.getElementById('calendar');
+    calendar.innerHTML = ''; // Clear existing content
+    
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const today = new Date().getDay();
+    
+    // Create calendar grid
+    for (let i = 0; i < 7; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'day';
+        
+        // Add day header
+        const headerH3 = document.createElement('h3');
+        headerH3.className = 'day-header';
+        headerH3.textContent = days[i];
+        if (i === today) {
+            headerH3.textContent += ' (Today)';
+            dayDiv.classList.add('today');
+        }
+        dayDiv.appendChild(headerH3);
+        
+        // Add menu for the day
+        const dayMenu = document.createElement('div');
+        dayMenu.className = 'day-menu';
+        
+        if (weeklyMenu[i]) {
+            weeklyMenu[i].forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'meal-category';
+                
+                const categoryTitle = document.createElement('h4');
+                categoryTitle.className = 'meal-category-title';
+                categoryTitle.textContent = category.title;
+                categoryDiv.appendChild(categoryTitle);
+                
+                const mealItems = document.createElement('div');
+                mealItems.className = 'meal-items';
+                
+                category.meals.forEach(meal => {
+                    const mealDiv = document.createElement('div');
+                    mealDiv.className = 'meal-item';
+                    
+                    const mealSpan = document.createElement('span');
+                    mealSpan.textContent = meal;
+                    
+                    const starBtn = document.createElement('button');
+                    starBtn.className = 'star-btn';
+                    starBtn.innerHTML = '<i class="far fa-heart"></i>'; // Empty heart
+                    
+                    mealDiv.appendChild(mealSpan);
+                    mealDiv.appendChild(starBtn);
+                    mealItems.appendChild(mealDiv);
+                });
+                
+                categoryDiv.appendChild(mealItems);
+                dayMenu.appendChild(categoryDiv);
 				});
 			} else {
-				return response.json();
+            dayMenu.innerHTML = '<p class="no-menu">Menu not available</p>';
 			}
-		})
-		.then(function(result) {
-			if (!result) return;
+        
+        dayDiv.appendChild(dayMenu);
+        calendar.appendChild(dayDiv);
+    }
+}
 
-			console.log(result);
-			menuEntry.innerText = "";
+function setupCrowdLevelIndicators() {
+    const crowdCircles = document.querySelectorAll('.crowdCircle');
+    const crowdDescription = document.getElementById('crowdDescription');
+    
+    // Simulated crowd level (1-5)
+    // In a real implementation, this would come from your backend
+    const currentCrowdLevel = 3;
 
-			const labels = ["Breakfast", "Brunch", "Lunch", "Dinner"];
-			for (let i = 0; i < 4; i++) {
-				const mealArray = result.evk[i];
-				if (mealArray && mealArray.length > 0) {
-					menuEntry.innerText += labels[i] + ":\n";
-					for (let j = 0; j < mealArray.length; j++) {
-						menuEntry.innerText += mealArray[j].title + ": " + mealArray[j].meals[0] + "\n";
-					}
-				}
+    const descriptions = {
+        1: 'The dining hall is "not busy"',
+        2: 'The dining hall is "slightly busy"',
+        3: 'The dining hall is "moderately busy"',
+        4: 'The dining hall is "very busy"',
+        5: 'The dining hall is "extremely busy"'
+    };
+    
+    // Update circles based on crowd level
+    crowdCircles.forEach((circle, index) => {
+        if (index < currentCrowdLevel) {
+            circle.classList.add('active');
+        } else {
+            circle.classList.remove('active');
+        }
+        
+        // Add click event to update crowd level
+        circle.addEventListener('click', () => {
+            const isLoggedIn = checkLoginStatus();
+            if (!isLoggedIn) {
+                showLoginPrompt();
+                return;
+            }
+            
+            // Get user data
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (!user.uscId) {
+                showLoginPrompt();
+                return;
+            }
+            
+            // Here you would add the logic to update the crowd level
+            const newLevel = index + 1;
+            
+            // Send to SubmitOccupancyServlet
+            const formData = new URLSearchParams();
+            formData.append('usc_id', user.uscId);
+            formData.append('hall_id', '1'); // EVK's ID
+            formData.append('occupancy_level', newLevel);
+            
+            fetch('../SubmitOccupancyServlet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update UI
+                    crowdCircles.forEach((c, i) => {
+                        if (i < newLevel) {
+                            c.classList.add('active');
+                        } else {
+                            c.classList.remove('active');
+                        }
+                    });
+                    crowdDescription.textContent = descriptions[newLevel];
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting occupancy:', error);
+            });
+        });
+    });
+    
+    // Update description
+    crowdDescription.textContent = descriptions[currentCrowdLevel];
+    
+    // Fetch current occupancy level
+    fetch('../GetOccupancyServlet?hall_id=1')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.occupancy_level) {
+                const level = data.occupancy_level;
+                crowdCircles.forEach((circle, index) => {
+                    if (index < level) {
+                        circle.classList.add('active');
+                    } else {
+                        circle.classList.remove('active');
 			}
-		})
-		.catch(function(error) {
-			console.error("Fetch error:", error);
+                });
+                crowdDescription.textContent = descriptions[level];
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching occupancy:', error);
 		});
 }

@@ -2,6 +2,9 @@
 -- SCHEMA: USC Dining Halls System
 -- ========================
 
+CREATE DATABASE IF NOT EXISTS dininghall;
+USE dininghall;
+
 -- 1. Users
 CREATE TABLE Users (
     usc_id INT PRIMARY KEY,

@@ -14,6 +14,7 @@
         <div class="container header-container">
             <h1 class="site-title">USC Dining Halls</h1>
             <div class="auth-buttons">
+                <!-- These buttons will be replaced by userLoginState.js -->
                 <button class="btn-auth">SIGN UP</button>
                 <button class="btn-auth">SIGN IN</button>
             </div>
@@ -57,7 +58,7 @@
                     
                     <div class="meal-tags">
                         <button class="meal-tag">
-                            Omelettes <i class="fas fa-heart"></i>
+                            Omelettes <i class="far fa-heart"></i>
                         </button>
                         <button class="meal-tag">
                             Tater Tots <i class="far fa-heart"></i>
@@ -69,7 +70,7 @@
                             Yogurt Bar <i class="far fa-heart"></i>
                         </button>
                         <button class="meal-tag">
-                            Oat n' Honey Granola <i class="fas fa-heart"></i>
+                            Oat n' Honey Granola <i class="far fa-heart"></i>
                         </button>
                         <button class="meal-tag">
                             Mexican Style Eggs <i class="far fa-heart"></i>
@@ -92,7 +93,7 @@
                             Hoagie Rolls <i class="far fa-heart"></i>
                         </button>
                         <button class="meal-tag">
-                            Asian Peanut Zoodle Buddha Bowl <i class="fas fa-heart"></i>
+                            Asian Peanut Zoodle Buddha Bowl <i class="far fa-heart"></i>
                         </button>
                         <button class="meal-tag">
                             Scrambled Eggs <i class="far fa-heart"></i>
@@ -121,7 +122,7 @@
                             Make Your Own Waffle Bar <i class="far fa-heart"></i>
                         </button>
                         <button class="meal-tag">
-                            Omelettes <i class="fas fa-heart"></i>
+                            Omelettes <i class="far fa-heart"></i>
                         </button>
                         <button class="meal-tag">
                             Herb Roasted Turkey <i class="far fa-heart"></i>
@@ -135,82 +136,52 @@
         </div>
     </main>
 
+    <!-- Include the userLoginState.js script -->
+    <script src="userLoginState.js"></script>
+    
     <script>
-        // JavaScript to toggle favorites
-        document.querySelectorAll('.meal-tag').forEach(button => {
-            button.addEventListener('click', function() {
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('far')) {
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
-                } else {
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
-                }
-            });
-        });
-        
         function navigateTo(page){
-        	if (page === 'evk') {
-        		window.location.href = 'EVK/EVK.html';
-        	} else if (page === 'village') {
-        		window.location.href = 'village/village.html';
-        	} else if (page === 'parkside') {
-        		window.location.href = 'parkside/parkside.html';
-        	}
+            if (page === 'evk') {
+                window.location.href = 'EVK/EVK.html';
+            } else if (page === 'village') {
+                window.location.href = 'village/village.html';
+            } else if (page === 'parkside') {
+                window.location.href = 'parkside/parkside.html';
+            }
         }
         
-        /*
-        //SIGN UP functionality
-        document.querySelectorAll('.btn-auth')[0].addEventListener('click', () => {
-            const usc_id = prompt("Enter USC ID:");
-            const email = prompt("Enter Email:");
-            const first_name = prompt("Enter First Name:");
-            const last_name = prompt("Enter Last Name:");
-            const password = prompt("Enter Password: ");
-
-            fetch('RegisterServlet', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `usc_id=${usc_id}&email=${encodeURIComponent(email)}&first_name=${encodeURIComponent(first_name)}&last_name=${encodeURIComponent(last_name)}&password=${encodeURIComponent(password)}`
-            })
-            .then(res => res.json())
-            .then(data => alert(data.message))
-            .catch(err => alert("Registration failed: " + err.message));
-        });*/
-        
-        /*
-        //SIGN IN functionality
-        document.querySelectorAll('.btn-auth')[1].addEventListener('click', () => {
-            const email = prompt("Enter Email:");
-            const password = prompt("Enter Password:");
-
-            fetch('LoginServlet', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `email=${email}&password=${encodeURIComponent(password)}`
-            })
-            .then(res => {
-                if (res.ok) return res.json();
-                else throw new Error("Login failed.");
-            })
-            .then(data => {
-                alert(data.message);
-                //possible for later: set cookie or redirect here
-            })
-            .catch(err => alert(err.message));
-        });*/
-        
-            document.querySelectorAll('.btn-auth')[0].addEventListener('click', () => {
-    		    window.location.href = 'registerPage.html';
-    		});
-
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login status and update UI accordingly
+            const isLoggedIn = checkLoginStatus();
             
+            // Enable or disable favorite functionality based on login status
+            if (isLoggedIn) {
+                enableFavorites();
+                // This needs to run AFTER we've fetched favorites from the server
+                fetchFavoritesFromServer().then(() => {
+                    updateFavoritesDisplay();
+                });
+            } else {
+                disableFavorites();
+            }
+        });
+        
+        // Show login prompt when user tries to use features when logged out
+        function showLoginPrompt() {
+            if (confirm('You need to be logged in to favorite meals. Would you like to log in now?')) {
+                window.location.href = 'loginPage.html';
+            }
+        }
+        
+        // Function to handle logout
+        function logout() {
+            // Clear user data from localStorage
+            localStorage.removeItem('user');
+            localStorage.removeItem('isLoggedIn');
             
-            //SIGN IN redirect to loginpage.html
-    		document.querySelectorAll('.btn-auth')[1].addEventListener('click', () => {
-    		    window.location.href = 'loginPage.html';
-    		});
+            // Reload the page to update UI
+            window.location.reload();
+        }
     </script>
 </body>
 </html>
