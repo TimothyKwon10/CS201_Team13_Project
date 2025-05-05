@@ -567,146 +567,138 @@ function clearSearch() {
 
 //----------------------------------------------------STAR REVIEW FUNCTIONALITY----------------------------------------------------//
 
-const hitBoxes =  document.querySelectorAll(".hitBox");
-const inputText = document.getElementById("inputText");
-const reviewStar = document.querySelectorAll(".reviewStar");
-const starInput = document.getElementById("rating");
-const ratingForm = document.getElementById("rate");
-let lockedRating = 0;
-
-hitBoxes.forEach(hitbox => {
-    hitbox.addEventListener('click', () => {
-        // Check if user is logged in before allowing rating
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        if (!isLoggedIn) {
-            showLoginPrompt();
-            return;
-        }
-        
-        const star = hitbox.querySelector('.reviewStar');
-        const value = star.getAttribute("data-value");
-        starInput.value = value;
-        lockedRating = value;
-
-        updateStars(lockedRating);
-    });
-
-    hitbox.addEventListener('mouseover', () => {
-        const star = hitbox.querySelector('.reviewStar');
-        const value = star.getAttribute("data-value");
-        updateStars(value);
-    });
-
-    hitbox.addEventListener('mouseout', () => {
-        updateStars(lockedRating);
-    });
+document.addEventListener('DOMContentLoaded', () => {
+   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+   const user = JSON.parse(localStorage.getItem('user') || '{}');
+   const reviewFormSection = document.getElementById('reviewFormSection');
+   const reviewForm = document.getElementById('reviewForm');
+   const inputText = document.getElementById('inputText');
+   const ratingInput = document.getElementById('rating');
+   const reviewError = document.getElementById('reviewError');
+   const reviewStars = document.querySelectorAll('.reviewStar');
+   const hallId = 1; // EVK
+   // 1. If not logged in, replace the form with login prompt
+   if (!isLoggedIn || !user.uscId) {
+       reviewFormSection.innerHTML = `
+           <div class="login-prompt">
+               Please <a href="../loginPage.html">sign in</a> to leave a review.
+           </div>
+       `;
+       return;
+   }
+   // 2. Handle star rating selection
+   let lockedRating = 0;
+   reviewStars.forEach(star => {
+       star.addEventListener('click', () => {
+           lockedRating = parseInt(star.dataset.value);
+           updateStars(lockedRating);
+           ratingInput.value = lockedRating;
+       });
+       star.addEventListener('mouseover', () => {
+           updateStars(parseInt(star.dataset.value));
+       });
+       star.addEventListener('mouseout', () => {
+           updateStars(lockedRating);
+       });
+   });
+   function updateStars(value) {
+       reviewStars.forEach(star => {
+           const val = parseInt(star.dataset.value);
+           star.classList.toggle('selected', val <= value);
+       });
+   }
+   // 3. Submit review via POST to ReviewsServlet
+   reviewForm.addEventListener('submit', e => {
+       e.preventDefault();
+       const rating = parseInt(ratingInput.value);
+       const comment = inputText.value.trim();
+       if (!rating || !comment) {
+           reviewError.style.display = 'block';
+           return;
+       }
+       const formData = new URLSearchParams({
+           usc_id: user.uscId,
+           hall_id: hallId,
+           rating: rating,
+           comment: comment
+       });
+       fetch('../ReviewsServlet', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+           body: formData.toString()
+       })
+       .then(response => response.json())
+       .then(data => {
+           alert(data.message || 'Review submitted!');
+           location.reload(); // Reload to show updated reviews (if you implement fetching later)
+       })
+       .catch(err => {
+           console.error('Error submitting review:', err);
+           alert('Something went wrong while submitting your review.');
+       });
+   });
+   // Hide error when user clicks outside the form
+   document.addEventListener('click', (event) => {
+       if (!reviewForm.contains(event.target)) {
+           reviewError.style.display = 'none';
+       }
+   });
 });
-
-function updateStars(value) {
-    reviewStar.forEach(s => {
-        if (parseFloat(s.getAttribute("data-value")) <= value) {
-            s.classList.add('selected');
-        } else {
-            s.classList.remove('selected');
-        }
-    });
-}
-
-ratingForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    
-    // Check if user is logged in
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    if (!isLoggedIn) {
-        showLoginPrompt();
-        return;
-    }
-    
-    if (!starInput.value) {
-        const reviewError = document.getElementById("reviewError");
-        reviewError.style.display = "block";
-    }
-    else {
-        // Get user data for the review submission
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        
-        // If we have a valid user with USC ID
-        if (user && user.uscId) {
-            // Prepare review data
-            const reviewData = {
-                usc_id: user.uscId,
-                hall_id: 1, // EVK ID (adjust as needed)
-                rating: starInput.value,
-                comment: inputText.value
-            };
-            
-            // Submit review to server
-            submitReview(reviewData);
-            
-            // Clear form
-            inputText.value = "";
-            starInput.value = null;
-            lockedRating = 0;
-            reviewStar.forEach(s => {
-                s.classList.remove('selected');
-            });
-        } else {
-            showLoginPrompt();
-        }
-    }
-});
-
-// Submit review to server
-function submitReview(reviewData) {
-    // Create form data from review object
-    const formData = new URLSearchParams();
-    Object.keys(reviewData).forEach(key => {
-        formData.append(key, reviewData[key]);
-    });
-    
-    // Send review to server
-    fetch('../ReviewsServlet', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData.toString()
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        // Reload reviews after successful submission
-        loadReviews();
-    })
-    .catch(error => {
-        console.error('Error submitting review:', error);
-        alert('Failed to submit review. Please try again.');
-    });
-}
-
-// Load reviews from server
-function loadReviews() {
-    // This function would fetch reviews from the server
-    console.log('Loading reviews...');
-    
-    // You would implement something like this:
-    /*
-    fetch('../GetReviewsServlet?hall_id=1') // 1 for EVK
-        .then(response => response.json())
-        .then(reviews => {
-            displayReviews(reviews);
-        })
-        .catch(error => {
-            console.error('Error loading reviews:', error);
-        });
-    */
-}
-
-document.addEventListener('click', (event) => {
-    if (!ratingForm.contains(event.target)) {
-        const reviewError = document.getElementById("reviewError");
-        reviewError.style.display = "none";
-    }
+document.addEventListener('DOMContentLoaded', () => {
+   const hallId = 1; // EVK
+   const existingReviews = document.getElementById('existingReviews');
+   const overallRating = document.getElementById('overallRating');
+   fetch('/DiningHall/GetReviewServlet?hall_id=1')
+       .then(response => response.json())
+       .then(reviews => {
+           if (!Array.isArray(reviews)) {
+               throw new Error("Invalid JSON response format");
+           }
+           existingReviews.innerHTML = ''; // Clear default/fallback reviews
+           if (reviews.length === 0) {
+               existingReviews.innerHTML = '<p>No reviews yet. Be the first to leave one!</p>';
+               overallRating.textContent = '0.0';
+               return;
+           }
+           let totalRating = 0;
+           reviews.forEach(review => {
+               totalRating += review.rating;
+               const reviewItem = document.createElement('div');
+               reviewItem.className = 'review-item';
+               const header = document.createElement('div');
+               header.className = 'review-header';
+               const author = document.createElement('span');
+               author.className = 'review-author';
+               author.textContent = review.username;
+               const stars = document.createElement('div');
+               stars.className = 'review-rating';
+               for (let i = 1; i <= 5; i++) {
+                   const star = document.createElement('i');
+                   star.className = i <= review.rating ? 'fas fa-heart' : 'far fa-heart';
+                   stars.appendChild(star);
+               }
+               header.appendChild(author);
+               header.appendChild(stars);
+               const comment = document.createElement('p');
+               comment.className = 'review-text';
+               comment.textContent = review.comment;
+               const date = document.createElement('p');
+               date.className = 'review-date';
+               date.style.fontSize = '0.8em';
+               date.style.color = 'gray';
+               date.textContent = `Posted on ${new Date(review.created_at).toLocaleString()}`;
+               reviewItem.appendChild(header);
+               reviewItem.appendChild(comment);
+               reviewItem.appendChild(date);
+               existingReviews.appendChild(reviewItem);
+           });
+           const avg = (totalRating / reviews.length).toFixed(1);
+           overallRating.textContent = avg;
+       })
+       .catch(err => {
+           console.error("Failed to load reviews:", err);
+           existingReviews.innerHTML = '<p>Error loading reviews.</p>';
+       });
 });
 
 //----------------------------------------------------FAVORITE FUNCTIONALITY----------------------------------------------------//

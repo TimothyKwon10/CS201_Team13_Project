@@ -15,8 +15,8 @@
             <h1 class="site-title">USC Dining Halls</h1>
             <div class="auth-buttons">
                 <!-- These buttons will be replaced by userLoginState.js -->
-                <button class="btn-auth">SIGN UP</button>
-                <button class="btn-auth">SIGN IN</button>
+                <button class="btn-auth" onclick= "window.location.href='registerPage.html'">SIGN UP</button>
+                <button class="btn-auth" onclick= "window.location.href='loginPage.html'">SIGN IN</button>
             </div>
         </div>
     </header>
@@ -136,52 +136,53 @@
         </div>
     </main>
 
-    <!-- Include the userLoginState.js script -->
-    <script src="userLoginState.js"></script>
-    
     <script>
-        function navigateTo(page){
-            if (page === 'evk') {
-                window.location.href = 'EVK/EVK.html';
-            } else if (page === 'village') {
-                window.location.href = 'village/village.html';
-            } else if (page === 'parkside') {
-                window.location.href = 'parkside/parkside.html';
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check login status and update UI accordingly
-            const isLoggedIn = checkLoginStatus();
-            
-            // Enable or disable favorite functionality based on login status
-            if (isLoggedIn) {
-                enableFavorites();
-                // This needs to run AFTER we've fetched favorites from the server
-                fetchFavoritesFromServer().then(() => {
-                    updateFavoritesDisplay();
-                });
-            } else {
-                disableFavorites();
-            }
-        });
-        
-        // Show login prompt when user tries to use features when logged out
-        function showLoginPrompt() {
-            if (confirm('You need to be logged in to favorite meals. Would you like to log in now?')) {
-                window.location.href = 'loginPage.html';
-            }
-        }
-        
-        // Function to handle logout
-        function logout() {
-            // Clear user data from localStorage
-            localStorage.removeItem('user');
-            localStorage.removeItem('isLoggedIn');
-            
-            // Reload the page to update UI
-            window.location.reload();
-        }
+	    function navigateTo(page){
+	        if (page === 'evk') {
+	            window.location.href = 'EVK/EVK.html';
+	        } else if (page === 'village') {
+	            window.location.href = 'village/village.html';
+	        } else if (page === 'parkside') {
+	            window.location.href = 'parkside/parkside.html';
+	        }
+	    }
+	
+	    // Replace auth buttons based on login state
+	    document.addEventListener('DOMContentLoaded', function() {
+	        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+	        const user = JSON.parse(localStorage.getItem('user') || '{}');
+	        const authButtons = document.querySelector('.auth-buttons');
+	
+	        if (isLoggedIn && user.uscId) {
+	            authButtons.innerHTML = `
+	                <button class="btn-auth" id="logoutBtn">LOG OUT</button>
+	            `;
+	            document.getElementById('logoutBtn').addEventListener('click', logout);
+	
+	            //enableFavorites(); NEED TO IMPLEMENT
+/* 	            fetchFavoritesFromServer().then(() => { NEED TO IMPLEMENT
+	                updateFavoritesDisplay();
+	            }); */
+	        } else {
+	            authButtons.innerHTML = `
+	                <button class="btn-auth" onclick="window.location.href='registerPage.html'">SIGN UP</button>
+	                <button class="btn-auth" onclick="window.location.href='loginPage.html'">SIGN IN</button>
+	            `;
+	            //disableFavorites(); NEED TO IMPLEMENT
+	        }
+	    });
+	
+	    function showLoginPrompt() {
+	        if (confirm('You need to be logged in to favorite meals. Would you like to log in now?')) {
+	            window.location.href = 'loginPage.html';
+	        }
+	    }
+	
+	    function logout() {
+	        localStorage.removeItem('user');
+	        localStorage.removeItem('isLoggedIn');
+	        window.location.reload();
+	    }
     </script>
 </body>
 </html>

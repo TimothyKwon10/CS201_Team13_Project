@@ -63,9 +63,9 @@ public class RegisterServlet extends HttpServlet {
             }
             
             // Parse USC ID safely
-            int uscID;
+            Long uscID;
             try {
-                uscID = Integer.parseInt(uscIdStr);
+                uscID = Long.parseLong(uscIdStr);
             } catch (NumberFormatException e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.println("{\"message\": \"USC ID must be a valid number.\"}");
@@ -81,7 +81,7 @@ public class RegisterServlet extends HttpServlet {
                 
                 // Check if user already exists
                 PreparedStatement checkStmt = con.prepareStatement("SELECT * FROM Users WHERE usc_id = ? OR email = ?");
-                checkStmt.setInt(1, uscID);
+                checkStmt.setLong(1, uscID);
                 checkStmt.setString(2, email);
                 ResultSet rs = checkStmt.executeQuery();
 
@@ -93,7 +93,7 @@ public class RegisterServlet extends HttpServlet {
 
                 // Insert new user
                 PreparedStatement st = con.prepareStatement("INSERT INTO Users (usc_id, email, first_name, last_name, password) VALUES(?, ?, ?, ?, ?)");
-                st.setInt(1, uscID);
+                st.setLong(1, uscID);
                 st.setString(2, email);
                 st.setString(3, firstName);
                 st.setString(4, lastName);

@@ -77,7 +77,7 @@ public class LoginServlet extends HttpServlet {
                 if (rs.next()) {
                     // User authenticated successfully
                     // Get user details
-                    int uscId = rs.getInt("usc_id");
+                    Long uscId = rs.getLong("usc_id");
                     String firstName = rs.getString("first_name");
                     String lastName = rs.getString("last_name");
                     

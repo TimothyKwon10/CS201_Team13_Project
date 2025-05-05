@@ -7,7 +7,7 @@ USE dininghall;
 
 -- 1. Users
 CREATE TABLE Users (
-    usc_id INT PRIMARY KEY,
+    usc_id BIGINT PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
