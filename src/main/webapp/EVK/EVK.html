@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body onload='menuSetup()'>
+<body>
     <div id="page">
         <header class="header">
             <div class="header-container">
@@ -19,11 +19,10 @@
                         <button class="nav-btn" onclick="navigateTo('parkside')">PARKSIDE KITCHEN AND GRILL</button>
                     </nav>
                 </div>
-                <div class="auth-buttons">
-                    <!-- These buttons will be replaced by userLoginState.js -->
-                    <button class="btn-auth">SIGN UP</button>
-                    <button class="btn-auth">SIGN IN</button>
-                </div>  
+				<div class="auth-buttons" id="rightHeader">
+				    <button class="btn-auth" id="signUpBtn" onclick="window.location.href='../registerPage.html'">SIGN UP</button>
+				    <button class="btn-auth" id="signInBtn" onclick="window.location.href='../loginPage.html'">SIGN IN</button>
+				</div>
             </div>
         </header>
         
@@ -136,72 +135,5 @@
         </div>
     </div>
     <script src = "EVK.js"></script>
-    <script src="../userLoginState.js"></script>
-    <script>
-        function navigateTo(page) {
-            if (page === 'home') {
-                window.location.href = '../HomePage.html';
-            } else if (page === 'evk') {
-                window.location.href = '../EVK/EVK.html';
-            } else if (page === 'village') {
-                window.location.href = '../village/village.html';
-            } else if (page === 'parkside') {
-                window.location.href = '../parkside/parkside.html';
-            }
-        }
-
-        // Handle review form display based on login status
-        document.addEventListener('DOMContentLoaded', function() {
-            const reviewFormSection = document.getElementById('reviewFormSection');
-            const isLoggedIn = checkLoginStatus(); // From userLoginState.js
-
-            if (isLoggedIn) {
-                reviewFormSection.innerHTML = `
-                    <form class="review-form" id="reviewForm">
-                        <textarea placeholder="Share your thoughts about EVK..." required></textarea>
-                        <div class="review-form-footer">
-                            <div class="rating-select">
-                                <i class="far fa-heart" data-rating="1"></i>
-                                <i class="far fa-heart" data-rating="2"></i>
-                                <i class="far fa-heart" data-rating="3"></i>
-                                <i class="far fa-heart" data-rating="4"></i>
-                                <i class="far fa-heart" data-rating="5"></i>
-                            </div>
-                            <button type="submit" class="submit-review">Submit Review</button>
-                        </div>
-                    </form>
-                `;
-
-                // Handle rating selection
-                const ratingIcons = document.querySelectorAll('.rating-select i');
-                ratingIcons.forEach(icon => {
-                    icon.addEventListener('click', function() {
-                        const rating = this.dataset.rating;
-                        ratingIcons.forEach(i => {
-                            if (i.dataset.rating <= rating) {
-                                i.classList.remove('far');
-                                i.classList.add('fas');
-                            } else {
-                                i.classList.remove('fas');
-                                i.classList.add('far');
-                            }
-                        });
-                    });
-                });
-
-                // Handle form submission
-                document.getElementById('reviewForm').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    // Add your review submission logic here
-                });
-            } else {
-                reviewFormSection.innerHTML = `
-                    <div class="login-prompt">
-                        Please <a href="../loginPage.html">sign in</a> to leave a review
-                    </div>
-                `;
-            }
-        });
-    </script>
 </body>
 </html>

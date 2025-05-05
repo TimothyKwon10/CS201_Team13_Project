@@ -117,6 +117,12 @@ h1, h2, h3, h4, h5, h6 {
     margin-left: 32px;
 }
 
+#rightHeader {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
 .btn-auth {
     background: none;
     border: none;
@@ -149,7 +155,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Remove old header styles */
-#header, #leftHeader, #rightHeader, .headerButton {
+#header, #leftHeader, .headerButton {
     display: none;
 }
 

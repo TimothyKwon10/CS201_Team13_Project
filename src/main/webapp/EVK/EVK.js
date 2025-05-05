@@ -10,25 +10,25 @@ const clearButton = document.getElementById("clearButton");
 
 // Initialize everything when the page loads
 document.addEventListener('DOMContentLoaded', function() {
-    // Check login status
-    const isLoggedIn = checkLoginStatus();
-    
+	
+	checkLoginStatus();
+	
     // Setup menu and calendar
     menuSetup();
     
     // Setup search functionality
     setupSearchFunctionality();
-    
-    // Setup star review functionality
-    setupStarReviewFunctionality();
-    
+	
     // Setup crowd level indicators
     setupCrowdLevelIndicators();
     
+	
     // If logged in, fetch favorites from server
-    if (isLoggedIn) {
-        fetchFavoritesFromServer();
-    }
+    //if (isLoggedIn) {
+    //    fetchFavoritesFromServer();
+    //}
+	
+	// --- Render Auth Button / Logout ---
 });
 
 // Check login status and update UI
@@ -79,57 +79,50 @@ function updateFavoritesDisplay() {
     });
 }
 
-// Update header to show login status
 function updateHeaderLoginStatus(isLoggedIn, user) {
     const rightHeader = document.getElementById('rightHeader');
+    const signInBtn = document.getElementById('signInBtn');
+    const signUpBtn = document.getElementById('signUpBtn');
     
-    // If logged in, show user info and logout button
     if (isLoggedIn && user) {
-        // Check if we already added user info elements
+        // Hide auth buttons
+        if (signInBtn) signInBtn.style.display = 'none';
+        if (signUpBtn) signUpBtn.style.display = 'none';
+        
+        // Create user info if it doesn't exist
         if (!document.getElementById('userInfo')) {
-            // Create user info and logout button
             const userInfo = document.createElement('div');
             userInfo.id = 'userInfo';
             userInfo.style.display = 'flex';
             userInfo.style.alignItems = 'center';
             userInfo.style.gap = '1em';
             
-            // Welcome message
             const welcomeMsg = document.createElement('span');
-            welcomeMsg.textContent = `Welcome, ${user.firstName || 'User'}`;
-            welcomeMsg.style.color = 'white';
-            welcomeMsg.style.fontFamily = 'Georgia';
+            welcomeMsg.textContent = `Welcome ${user.firstName || 'User'}!`;
+            welcomeMsg.style.color = 'black';
+            welcomeMsg.style.fontFamily = "'Helvetica', Arial, sans-serif";
+			welcomeMsg.style.fontSize = "14";
+			welcomeMsg.style.fontWeight = "normal";
             
-            // Logout button
             const logoutBtn = document.createElement('button');
             logoutBtn.textContent = 'LOGOUT';
-            logoutBtn.className = 'headerButton';
+            logoutBtn.className = 'btn-auth'; // Use same class as other buttons
             logoutBtn.id = 'logoutBtn';
             logoutBtn.addEventListener('click', logout);
             
-            // Add elements to the header
             userInfo.appendChild(welcomeMsg);
             userInfo.appendChild(logoutBtn);
-            
-            // Add user info to the right of the navigation buttons
             rightHeader.appendChild(userInfo);
         }
     } else {
-        // If not logged in, remove user info if it exists
+        // Show auth buttons
+        if (signInBtn) signInBtn.style.display = 'block';
+        if (signUpBtn) signUpBtn.style.display = 'block';
+        
+        // Remove user info if it exists
         const userInfo = document.getElementById('userInfo');
         if (userInfo) {
             rightHeader.removeChild(userInfo);
-        }
-        
-        // Add login button if it doesn't exist
-        if (!document.getElementById('loginBtn')) {
-            const loginBtn = document.createElement('button');
-            loginBtn.textContent = 'LOGIN';
-            loginBtn.className = 'headerButton';
-            loginBtn.id = 'loginBtn';
-            loginBtn.addEventListener('click', () => window.location.href = '../loginPage.html');
-            
-            rightHeader.appendChild(loginBtn);
         }
     }
 }
@@ -376,10 +369,7 @@ function logout() {
     // Clear user data from localStorage
     localStorage.removeItem('user');
     localStorage.removeItem('isLoggedIn');
-    
-    // Optional: Display logout message
-    alert('You have been logged out successfully');
-    
+
     // Redirect to home page
     window.location.href = '../HomePage.html';
 }
@@ -731,12 +721,6 @@ function enableFavorites() {
         // Set cursor style
         newBtn.style.cursor = 'pointer';
     });
-    
-    // Make review form accessible
-    if (ratingForm) {
-        inputText.disabled = false;
-        inputText.placeholder = "Please leave a review:";
-    }
 }
 
 // Disable favorite functionality for logged-out users
@@ -753,12 +737,6 @@ function disableFavorites() {
         // Set cursor style
         newBtn.style.cursor = 'not-allowed';
     });
-    
-    // Make review form inaccessible
-    if (ratingForm) {
-        inputText.disabled = true;
-        inputText.placeholder = "Please log in to leave a review";
-    }
 }
 
 // Show login prompt when user tries to use features when logged out
@@ -1143,3 +1121,5 @@ function setupCrowdLevelIndicators() {
             console.error('Error fetching occupancy:', error);
 		});
 }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------
