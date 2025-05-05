@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
    const inputText = document.getElementById('inputText');
    const ratingInput = document.getElementById('rating');
    const reviewError = document.getElementById('reviewError');
-   const reviewStars = document.querySelectorAll('.reviewStar');
+   const reviewStars = document.querySelectorAll('.hitBox');
    const hallId = 1; // EVK
    // 1. If not logged in, replace the form with login prompt
    if (!isLoggedIn || !user.uscId) {
@@ -578,25 +578,37 @@ document.addEventListener('DOMContentLoaded', () => {
    }
    // 2. Handle star rating selection
    let lockedRating = 0;
-   reviewStars.forEach(star => {
-       star.addEventListener('click', () => {
-           lockedRating = parseInt(star.dataset.value);
-           updateStars(lockedRating);
-           ratingInput.value = lockedRating;
+   reviewStars.forEach(box => {
+       box.addEventListener('click', () => {
+           const star = box.querySelector('.reviewStar');
+           const value = parseInt(star.dataset.value);
+		   console.log("Clicked star value:", value);
+		   
+           lockedRating = value;
+           updateStars(value);
+           ratingInput.value = value;
        });
-       star.addEventListener('mouseover', () => {
+
+       box.addEventListener('mouseover', () => {
+           const star = box.querySelector('.reviewStar');
            updateStars(parseInt(star.dataset.value));
        });
-       star.addEventListener('mouseout', () => {
+
+       box.addEventListener('mouseout', () => {
            updateStars(lockedRating);
        });
    });
+   
    function updateStars(value) {
-       reviewStars.forEach(star => {
+       reviewStars.forEach(box => {
+           const star = box.querySelector('.reviewStar');
            const val = parseInt(star.dataset.value);
-           star.classList.toggle('selected', val <= value);
+           if (star) {
+               star.classList.toggle('selected', val <= value);
+           }
        });
    }
+   
    // 3. Submit review via POST to ReviewsServlet
    reviewForm.addEventListener('submit', e => {
        e.preventDefault();
@@ -619,7 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
        })
        .then(response => response.json())
        .then(data => {
-           alert(data.message || 'Review submitted!');
+           console.log(data);
            location.reload(); // Reload to show updated reviews (if you implement fetching later)
        })
        .catch(err => {

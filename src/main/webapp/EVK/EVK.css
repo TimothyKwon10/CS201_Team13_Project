@@ -612,7 +612,8 @@ h1, h2, h3, h4, h5, h6 {
 .review-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    gap: 5px;
 }
 
 .review-form textarea {
@@ -783,6 +784,42 @@ h1, h2, h3, h4, h5, h6 {
 .meal-item .star-btn:hover,
 .meal-item .star-btn.favorited {
     color: #990001;
+}
+
+/* ========== Heart Rating Interaction ========== */
+
+/* Base heart appearance */
+.reviewStar {
+    font-size: 24px;
+    color: #DFDDD2; /* Light gray when unselected */
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover effect */
+.reviewStar:hover {
+    color: #FF6B6B; /* Light red on hover */
+    transform: scale(1.2);
+}
+
+/* Selected hearts */
+.reviewStar.selected {
+    color: #990001; /* Dark red when selected */
+}
+
+.hitBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+.rating-select {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 16px;
 }
 
 /* Login Prompt Popup */

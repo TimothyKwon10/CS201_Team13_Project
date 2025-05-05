@@ -102,21 +102,26 @@
            </div>
            <!-- Form to submit a new review -->
            <div id="reviewFormSection">
-               <form class="review-form" id="reviewForm">
-                   <textarea id="inputText" placeholder="Share your thoughts about EVK..." required></textarea>
-                   <div class="review-form-footer">
-                       <div class="rating-select">
-                           <div class="hitBox"><span class="reviewStar" data-value="1">&#10084;</span></div>
-                           <div class="hitBox"><span class="reviewStar" data-value="2">&#10084;</span></div>
-                           <div class="hitBox"><span class="reviewStar" data-value="3">&#10084;</span></div>
-                           <div class="hitBox"><span class="reviewStar" data-value="4">&#10084;</span></div>
-                           <div class="hitBox"><span class="reviewStar" data-value="5">&#10084;</span></div>
-                       </div>
-                       <input type="hidden" id="rating" name="rating">
-                       <button type="submit" class="submit-review">Submit Review</button>
-                   </div>
-                   <div id="reviewError" style="display: none; color: red;">Please select a rating.</div>
-               </form>
+			<form class="review-form" id="reviewForm">
+			    <textarea id="inputText" placeholder="Share your thoughts about EVK..." required></textarea>
+			
+			    <!-- Moved heart rating section outside the footer -->
+			    <div class="rating-select">
+			        <div class="hitBox"><span class="reviewStar" data-value="1">&#10084;</span></div>
+			        <div class="hitBox"><span class="reviewStar" data-value="2">&#10084;</span></div>
+			        <div class="hitBox"><span class="reviewStar" data-value="3">&#10084;</span></div>
+			        <div class="hitBox"><span class="reviewStar" data-value="4">&#10084;</span></div>
+			        <div class="hitBox"><span class="reviewStar" data-value="5">&#10084;</span></div>
+			    </div>
+			
+			    <input type="hidden" id="rating" name="rating">
+			
+			    <div class="review-form-footer">
+			        <button type="submit" class="submit-review">Submit Review</button>
+			    </div>
+			
+			    <div id="reviewError" style="display: none; color: red;">Please select a rating.</div>
+			</form>
            </div>
        </div>
    </div>

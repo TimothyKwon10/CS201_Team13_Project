@@ -36,14 +36,11 @@ public class ReviewsServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
        response.setContentType("application/json");
        PrintWriter out = response.getWriter();
-      
-       System.out.println("CUFKC");
-       System.out.println("CUFKC");
-       System.out.println("CUFKC");
+
       
 		try {
 			//subject to change, I have the table values for Reviews here
-           int uscID = Integer.parseInt(request.getParameter("usc_id"));
+           Long uscID = Long.parseLong(request.getParameter("usc_id"));
            int dininghallID = Integer.parseInt(request.getParameter("hall_id"));
            int rating = Integer.parseInt(request.getParameter("rating"));
            String comment = request.getParameter("comment");
@@ -51,7 +48,7 @@ public class ReviewsServlet extends HttpServlet {
            try (Connection con = DBConnection.getConnection()) {
            	//updating reviews
            	PreparedStatement st = con.prepareStatement("INSERT INTO Reviews(usc_id, hall_id, rating, comment) VALUES(?, ?, ?, ?)");
-               st.setInt(1, uscID);
+               st.setLong(1, uscID);
                st.setInt(2, dininghallID);
                st.setInt(3, rating);
                st.setString(4, comment);
@@ -62,9 +59,9 @@ public class ReviewsServlet extends HttpServlet {
 		}
 		catch(Exception e){
 			e.printStackTrace();
-           response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-           response.setContentType("application/json");
-           response.getWriter().write("{\"message\": \"Could not submit review.\"}");
+	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        response.setContentType("application/json");
+	        response.getWriter().write("{\"message\": \"Could not submit review.\"}");
 		}
 	}
 }
