@@ -1040,100 +1040,57 @@ function setupWeeklyCalendar(weeklyMenu) {
 }
 
 function setupCrowdLevelIndicators() {
-	const crowdCircles = document.querySelectorAll('.crowdCircle');
-	 const crowdDescription = document.getElementById('crowdDescription');
+  const circles = Array.from(document.querySelectorAll('.crowdCircle'));
+  const desc    = document.getElementById('crowdDescription');
+  const levelMap = { LOW: 1, MED: 3, HIGH: 5 };
 
-	 const descriptions = {
-	     1: 'The dining hall is "not busy"',
-	     2: 'The dining hall is "slightly busy"',
-	     3: 'The dining hall is "moderately busy"',
-	     4: 'The dining hall is "very busy"',
-	     5: 'The dining hall is "extremely busy"'
-	 };
+  //1) Initial load
+  fetch('../ActivityReportServlet', { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+      const rec = data.find(e => e.hall_id === hallId) || {};
+      const n   = levelMap[rec.activity_level] || 0;
+      circles.forEach((c, i) =>
+        c.textContent = i < n ? '●' : '○'
+      );
+      desc.textContent = rec.activity_level
+        ? `(The dining hall is "${rec.activity_level.toLowerCase()}" busy)`
+        : '(No occupancy data yet)';
+    })
+    .catch(() => {
+      desc.textContent = '(Error loading occupancy)';
+    });
 
-	 // Load current occupancy
-	 fetch('../ActivityReportServlet', { method: 'POST'})
-	   .then(function(response) {
-	       return response.json();
-	   })
-	   .then(function(data) {
-	       var diningLevel = 0;
-	       for(var i = 0; i < data.length; i++) {
-	           if(data[i].hall_id === hallId) {
-	               if(data[i].activity_level === 'LOW') diningLevel = 1;
-				   else if (data[i].activity_level === 'MED') diningLevel = 3;
-			 	   else diningLevel = 5;
-	               break;
-	           }
-	       }
+  // 2) Click-to-submit
+  circles.forEach((circle, idx) => {
+    circle.addEventListener('click', () => {
+      // for testing without login:
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const usc  = user.uscId || 12345;
+      const lvl  = idx < 1 ? 'LOW' : idx < 3 ? 'MED' : 'HIGH';
 
-	       for(var j = 0; j < crowdCircles.length; j++) {
-	           if(j < diningLevel) crowdCircles[j].textContent = '●';
-	           else crowdCircles[j].textContent = '○';
-	       }
-
-	       if(descriptions[diningLevel]) crowdDescription.textContent = descriptions[diningLevel];
-		   else crowdDescription.textContent = '(No occupancy data yet)';
-	   })
-	   .catch(function(error) {
-	       console.error('Error loading occupancy:', error);
-	       crowdDescription.textContent = '(Error loading occupancy)';
-	   });
-
-	 // Submit new occupancy on circle click
-	 for(let i = 0; i < crowdCircles.length; i++) {
-	     crowdCircles[i].addEventListener('click', function() {
-	         if(!checkLoginStatus()) {
-	             showLoginPrompt();
-	             return;
-	         }
-
-	         var user = JSON.parse(localStorage.getItem('user') || '{}');
-	         if(!user.uscId) {
-	             showLoginPrompt();
-	             return;
-	         }
-
-	         var clickLevel = i + 1;
-	         var activityLevelText;
-	         if(clickLevel <= 1) activityLevelText = 'LOW';
-	         else if(clickLevel <= 3) activityLevelText = 'MED';
-	         else activityLevelText = 'HIGH';
-
-	         var payload = {
-	             usc_id: user.uscId,
-	             hall_id: hallId,
-	             activity_level: activityLevelText
-	         };
-
-	         fetch('../SubmitActivityServlet', {
-	             method: 'POST',
-	             headers: { 'Content-Type': 'application/json' },
-	             body: JSON.stringify(payload)
-	         })
-	         .then(function(res) {
-	             return res.json();
-	         })
-	         .then(function(resp) {
-	             if (resp.status === 'success') {
-	                 var updatedNumeric = 0;
-	                 if (activityLevelText === 'LOW') updatedNumeric = 1;
-	                 else if (activityLevelText === 'MED') updatedNumeric = 3;
-	                 else updatedNumeric = 5;
-	                 
-	                 for(var m = 0; m < crowdCircles.length; m++) {
-	                     if (m < updatedNumeric) crowdCircles[m].textContent = '●';
-	                     else crowdCircles[m].textContent = '○';	                  
-	                 }
-
-	                 crowdDescription.textContent = descriptions[updatedNumeric];
-	             }
-	         })
-	         .catch(function(err) {
-	             console.error('Error submitting occupancy:', err);
-	         });
-	     });
-	 }
+      fetch('../SubmitActivityServlet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usc_id: usc,
+          hall_id: hallId,
+          activity_level: lvl
+        })
+      })
+      .then(res => res.json())
+      .then(r => {
+        if (r.status === 'success') {
+          const m = levelMap[lvl];
+          circles.forEach((c, i) =>
+            c.textContent = i < m ? '●' : '○'
+          );
+          desc.textContent = `(The dining hall is "${lvl.toLowerCase()}" busy)`;
+        }
+      })
+      .catch(console.error);
+    });
+  });
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
