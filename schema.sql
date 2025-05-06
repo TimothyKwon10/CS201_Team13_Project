@@ -1,13 +1,13 @@
 -- ========================
 -- SCHEMA: USC Dining Halls System
 -- ========================
-
+DROP DATABASE IF EXISTS dininghall;
 CREATE DATABASE IF NOT EXISTS dininghall;
 USE dininghall;
 
 -- 1. Users
 CREATE TABLE Users (
-    usc_id BIGINT PRIMARY KEY,
+    usc_id INT PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
@@ -92,3 +92,10 @@ CREATE TABLE Notifications (
     FOREIGN KEY (usc_id) REFERENCES Users(usc_id),
     FOREIGN KEY (meal_id) REFERENCES Meals(meal_id)
 );
+
+INSERT INTO DiningHalls (name) VALUES
+  ('Everybody\'s Kitchen'),       
+  ('USC Village Dining Hall'),   
+  ('Parkside Kitchen and Grill'); 
+
+SELECT * FROM DiningHalls;

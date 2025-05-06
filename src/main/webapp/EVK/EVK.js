@@ -8,6 +8,8 @@ const form = document.getElementById("form");
 const searchSection = document.getElementById("searchSection")
 const clearButton = document.getElementById("clearButton");
 
+const hallId = parseInt(document.body.dataset.hallId, 10);
+
 // Initialize everything when the page loads
 document.addEventListener('DOMContentLoaded', function() {
 	
@@ -909,6 +911,8 @@ function menuSetup() {
             if (!data || !data.evk) {
                 throw new Error('Invalid menu data received');
             }
+			
+			console.log(data);
             // Populate today's menu
             populateTodayMenu(data.evk[0]); // First index is today's menu
             
@@ -1036,102 +1040,100 @@ function setupWeeklyCalendar(weeklyMenu) {
 }
 
 function setupCrowdLevelIndicators() {
-    const crowdCircles = document.querySelectorAll('.crowdCircle');
-    const crowdDescription = document.getElementById('crowdDescription');
-    
-    // Simulated crowd level (1-5)
-    // In a real implementation, this would come from your backend
-    const currentCrowdLevel = 3;
+	const crowdCircles = document.querySelectorAll('.crowdCircle');
+	 const crowdDescription = document.getElementById('crowdDescription');
 
-    const descriptions = {
-        1: 'The dining hall is "not busy"',
-        2: 'The dining hall is "slightly busy"',
-        3: 'The dining hall is "moderately busy"',
-        4: 'The dining hall is "very busy"',
-        5: 'The dining hall is "extremely busy"'
-    };
-    
-    // Update circles based on crowd level
-    crowdCircles.forEach((circle, index) => {
-        if (index < currentCrowdLevel) {
-            circle.classList.add('active');
-        } else {
-            circle.classList.remove('active');
-        }
-        
-        // Add click event to update crowd level
-        circle.addEventListener('click', () => {
-            const isLoggedIn = checkLoginStatus();
-            if (!isLoggedIn) {
-                showLoginPrompt();
-                return;
-            }
-            
-            // Get user data
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (!user.uscId) {
-                showLoginPrompt();
-                return;
-            }
-            
-            // Here you would add the logic to update the crowd level
-            const newLevel = index + 1;
-            
-            // Send to SubmitOccupancyServlet
-            const formData = new URLSearchParams();
-            formData.append('usc_id', user.uscId);
-            formData.append('hall_id', '1'); // EVK's ID
-            formData.append('occupancy_level', newLevel);
-            
-            fetch('../SubmitOccupancyServlet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData.toString()
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update UI
-                    crowdCircles.forEach((c, i) => {
-                        if (i < newLevel) {
-                            c.classList.add('active');
-                        } else {
-                            c.classList.remove('active');
-                        }
-                    });
-                    crowdDescription.textContent = descriptions[newLevel];
-                }
-            })
-            .catch(error => {
-                console.error('Error submitting occupancy:', error);
-            });
-        });
-    });
-    
-    // Update description
-    crowdDescription.textContent = descriptions[currentCrowdLevel];
-    
-    // Fetch current occupancy level
-    fetch('../GetOccupancyServlet?hall_id=1')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.occupancy_level) {
-                const level = data.occupancy_level;
-                crowdCircles.forEach((circle, index) => {
-                    if (index < level) {
-                        circle.classList.add('active');
-                    } else {
-                        circle.classList.remove('active');
-			}
-                });
-                crowdDescription.textContent = descriptions[level];
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching occupancy:', error);
-		});
+	 const descriptions = {
+	     1: 'The dining hall is "not busy"',
+	     2: 'The dining hall is "slightly busy"',
+	     3: 'The dining hall is "moderately busy"',
+	     4: 'The dining hall is "very busy"',
+	     5: 'The dining hall is "extremely busy"'
+	 };
+
+	 // Load current occupancy
+	 fetch('../ActivityReportServlet', { method: 'POST'})
+	   .then(function(response) {
+	       return response.json();
+	   })
+	   .then(function(data) {
+	       var diningLevel = 0;
+	       for(var i = 0; i < data.length; i++) {
+	           if(data[i].hall_id === hallId) {
+	               if(data[i].activity_level === 'LOW') diningLevel = 1;
+				   else if (data[i].activity_level === 'MED') diningLevel = 3;
+			 	   else diningLevel = 5;
+	               break;
+	           }
+	       }
+
+	       for(var j = 0; j < crowdCircles.length; j++) {
+	           if(j < diningLevel) crowdCircles[j].textContent = '●';
+	           else crowdCircles[j].textContent = '○';
+	       }
+
+	       if(descriptions[diningLevel]) crowdDescription.textContent = descriptions[diningLevel];
+		   else crowdDescription.textContent = '(No occupancy data yet)';
+	   })
+	   .catch(function(error) {
+	       console.error('Error loading occupancy:', error);
+	       crowdDescription.textContent = '(Error loading occupancy)';
+	   });
+
+	 // Submit new occupancy on circle click
+	 for(let i = 0; i < crowdCircles.length; i++) {
+	     crowdCircles[i].addEventListener('click', function() {
+	         if(!checkLoginStatus()) {
+	             showLoginPrompt();
+	             return;
+	         }
+
+	         var user = JSON.parse(localStorage.getItem('user') || '{}');
+	         if(!user.uscId) {
+	             showLoginPrompt();
+	             return;
+	         }
+
+	         var clickLevel = i + 1;
+	         var activityLevelText;
+	         if(clickLevel <= 1) activityLevelText = 'LOW';
+	         else if(clickLevel <= 3) activityLevelText = 'MED';
+	         else activityLevelText = 'HIGH';
+
+	         var payload = {
+	             usc_id: user.uscId,
+	             hall_id: hallId,
+	             activity_level: activityLevelText
+	         };
+
+	         fetch('../SubmitActivityServlet', {
+	             method: 'POST',
+	             headers: { 'Content-Type': 'application/json' },
+	             body: JSON.stringify(payload)
+	         })
+	         .then(function(res) {
+	             return res.json();
+	         })
+	         .then(function(resp) {
+	             if (resp.status === 'success') {
+	                 var updatedNumeric = 0;
+	                 if (activityLevelText === 'LOW') updatedNumeric = 1;
+	                 else if (activityLevelText === 'MED') updatedNumeric = 3;
+	                 else updatedNumeric = 5;
+	                 
+	                 for(var m = 0; m < crowdCircles.length; m++) {
+	                     if (m < updatedNumeric) crowdCircles[m].textContent = '●';
+	                     else crowdCircles[m].textContent = '○';	                  
+	                 }
+
+	                 crowdDescription.textContent = descriptions[updatedNumeric];
+	             }
+	         })
+	         .catch(function(err) {
+	             console.error('Error submitting occupancy:', err);
+	         });
+	     });
+	 }
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
