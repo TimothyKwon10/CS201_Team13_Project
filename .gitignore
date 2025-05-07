@@ -1,12 +1,17 @@
-# Eclipse metadata
+# Eclipse project files
 .classpath
 .project
+/.settings/
 
-# Build output
-build/classes/
+# Maven/Gradle build output
+/target/
+/build/
 
-# ignore IDE metadata
-.settings/
+# Your exploded webapp classes folder
+/src/main/webapp/WEB-INF/classes/
 
-# ignore auto-generated WAR manifest
-src/main/webapp/META-INF/MANIFEST.MF
+# All compiled Java classes
+*.class
+
+# OS artifacts
+.DS_Store
