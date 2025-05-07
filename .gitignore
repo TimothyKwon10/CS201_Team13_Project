@@ -4,3 +4,9 @@
 
 # Build output
 build/classes/
+
+# ignore IDE metadata
+.settings/
+
+# ignore auto-generated WAR manifest
+src/main/webapp/META-INF/MANIFEST.MF
