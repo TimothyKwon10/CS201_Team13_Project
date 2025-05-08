@@ -7,7 +7,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/config"/>
                 
-        <property name="java-output-path" value="/YOUR PROJECT NAME/build/classes"/>
+        <property name="java-output-path" value="/YOUR PROJECT NAME/bin"/>
         <property name="context-root" value="DiningHall"/>
             
     </wb-module>
