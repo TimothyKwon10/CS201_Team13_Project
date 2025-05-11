@@ -2,33 +2,43 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>DINING HALL PAGE</title>
-	<link rel = "stylesheet" href = "parkside.css">
+	<title>Parkside Restaurant And Grill | USC Dining Halls</title>
+	<link rel="stylesheet" href="parkside.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body onload = 'menuSetup()'>
-    <div id = "page">
-        <div id = "header">
-            <div id = "leftHeader"  onclick="navigateTo('homes')">
-                <img src = "/images/USC_seal.png" id = "homeIcon">
-                <h1>Home</h1>
+<body data-hall-id="1">
+    <div id="page">
+        <header class="header">
+            <div class="header-container">
+                <div class="left-section">
+                    <h1 class="site-title" onclick="navigateTo('home')">USC Dining Halls</h1>
+                    <nav class="nav-buttons">
+                        <button class="nav-btn" onclick="navigateTo('evk')">EVERYBODY'S KITCHEN</button>
+                        <button class="nav-btn" onclick="navigateTo('village')">USC VILLAGE DINING HALL</button>
+                        <button class="nav-btn" onclick="navigateTo('parkside')">PARKSIDE KITCHEN AND GRILL</button>
+                    </nav>
+                </div>
+				<div class="auth-buttons" id="rightHeader">
+				    <button class="btn-auth" id="signUpBtn" onclick="window.location.href='../registerPage.html'">SIGN UP</button>
+				    <button class="btn-auth" id="signInBtn" onclick="window.location.href='../loginPage.html'">SIGN IN</button>
+				</div>
             </div>
-            <div id  = "rightHeader">
-                <input type = "button" value = "Everybody's Kitchen" class = "headerButton" id = "EVKButton" onclick="navigateTo('evk')">
-                <input type = "button" value = "USC Village Dining Hall" class = "headerButton" id = "villageButton" onclick="navigateTo('village')">
-                <input type = "button" value = "Parkside Restaurant and Grill" class = "headerButton" id = "parksideButton" onclick="navigateTo('parkside')">
-            </div>  
-        </div>
-        <div id = "hero">
+        </header>
+        
+        <div id="hero">
             <h1 id = heroText>Parkside Restaurant And Grill</h1>
-            <img src = "/images/whiteArrow.png" id = "downArrow">
         </div>
         <div class = "centering">
             <div id = "searchSection">
                 <form id = "form">
-                    <button type = "submit" class = "searchButton" id = "searchIcon"><img src = "/images/search_icon.png" class = "searchIMG"></button> <!-- probably needs a name for backend access-->
+                    <button type = "submit" class = "searchButton" id = "searchIcon">
+                        <i class="fas fa-search"></i>
+                    </button>
                     <input type = "search" placeholder = "Search for a meal" id = "searchBar">
-                    <button type = "button" class = "searchButton" id = "clearButton"><img src = "/images/clear_icon.png" class = "searchIMG"></button>
+                    <button type = "button" class = "searchButton" id = "clearButton">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </form>
                 <div id = "dropdown">
                     <!--DROP DOWN MENU GOES HERE-->
@@ -37,9 +47,10 @@
         </div>
         <div class = "centering"> <!--DINING HALL INFO-->
             <div id = "diningHallInfo"> 
-                <div id = "leftSection">
-                    <h1 class = "centering" id  = "descriptionHeader">A Little About Parkside</h1>
-                    <p> Parkside Restaurant, located in the International Residential College at Parkside, serves international 
+                <div id = "leftColumn">
+                    <div id = "leftSection">
+                        <h1 class = "centering" id  = "descriptionHeader">A Little About Parkside</h1>
+                        <p> Parkside Restaurant, located in the International Residential College at Parkside, serves international 
                         specialties from our four exhibition stations and also offers vegetarian & vegan selections, sandwiches, pizza and salads.<br/>
 
                         Enjoy monthly theme nights, where we transform the dining room, bring in entertainment and let our chefs 
@@ -48,75 +59,81 @@
                         Each residential community is anchored by an all-you-care to eat dining venue. Specific meal plan participants enjoy 
                         unlimited access to all three dining halls. Each offers a different culinary experience appealing to a variety of dining preferences 
                         and nutritional lifestyles of our diverse student population.
-                </div>    
-                <div id = "rightSection">
-                    <div id = "menu">
-                        <h1 class = "centering">Today's Menu</h1>
-                        <ul id = "menuEntry">
-                            menu items for today go here
-                        </ul>
-                    </div>
-                    <div id = "crowdSection">
-                        <!-- <img src = "images/crowd.png" id = "crowdIMG"> -->
-                        <h1 id = "crowdTitle">How Packed Is Parkside?</h1>
-                        <div id = "crowdLVL">
-                            <span class = "crowdCircle">&#9675;</span>
-                            <span class = "crowdCircle">&#9675;</span>
-                            <span class = "crowdCircle">&#9675;</span>
-                            <span class = "crowdCircle">&#9675;</span>
-                            <span class = "crowdCircle">&#9675;</span>
+                        </p>
+                    </div>    
+                    
+                    <div id="crowdSection">
+                        <h1 id="crowdTitle">How Packed Is Parkside?</h1>
+                        <div id="crowdLVL">
+                            <span class="crowdCircle">&#9675;</span>
+                            <span class="crowdCircle">&#9675;</span>
+                            <span class="crowdCircle">&#9675;</span>
+                            <span class="crowdCircle">&#9675;</span>
+                            <span class="crowdCircle">&#9675;</span>
                         </div>
-                        <p id = "crowdDescription">(The dining hall is "moderately busy")</p>
+                        <p id="crowdDescription">(Loading occupancy…</p>
+                    </div>
+                </div>
+
+                <div id="rightSection">
+                    <div id="menu">
+                        <h1 class="centering">Today's Menu</h1>
+                        <div id="menuEntry">
+                            <!-- Menu categories will be populated here -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+<div class="centering">
+   <div id="reviewContainer">
+       <div id="reviewSection">
+           <!-- Header with average rating -->
+           <div id="reviewHeaderPortion">
+               <h1 id="reviewsHeader">Reviews</h1>
+               <h1 id="overallRating">0.0</h1> <!-- Will be calculated via JS later -->
+           </div>
+           <!-- All dynamically loaded reviews will go here -->
+           <div id="existingReviews">
+				<!-- Will be populated with review data -->
+           </div>
+           <!-- Form to submit a new review -->
+           <div id="reviewFormSection">
+			<form class="review-form" id="reviewForm">
+			    <textarea id="inputText" placeholder="Share your thoughts about Parkside..." required></textarea>
+			
+			    <!-- Moved heart rating section outside the footer -->
+			    <div class="rating-select">
+			        <div class="hitBox"><span class="reviewStar" data-value="1">&#10084;</span></div>
+			        <div class="hitBox"><span class="reviewStar" data-value="2">&#10084;</span></div>
+			        <div class="hitBox"><span class="reviewStar" data-value="3">&#10084;</span></div>
+			        <div class="hitBox"><span class="reviewStar" data-value="4">&#10084;</span></div>
+			        <div class="hitBox"><span class="reviewStar" data-value="5">&#10084;</span></div>
+			    </div>
+			
+			    <input type="hidden" id="rating" name="rating">
+			
+			    <div class="review-form-footer">
+			        <button type="submit" class="submit-review">Submit Review</button>
+			    </div>
+			
+			    <div id="reviewError" style="display: none; color: red;">Please select a rating.</div>
+			</form>
+           </div>
+       </div>
+   </div>
+</div>
+
         <div class = "centering">
             <div id = "imgAndReviews">
-                <div id = "reviewSection"> 
-                    <div id = "reviewHeaderPortion">
-                        <h1 id = "reviewsHeader">Reviews</h1>
-                        <h1 id = "overallRating">4.0</h1>
-                    </div>
-                    <div id = "existingReviews">
-                        Placeholder: wow evk sucks like crazy<br><br>
-                        Placeholder: wow evk sucks like crazy<br><br>
-                        Placeholder: wow evk sucks like crazy<br><br>
-                        Placeholder: wow evk sucks like crazy<br><br>
-                    </div>
-                    <form id = "rate" class = "centering">
-                        <textarea id="inputText" placeholder="Please leave a review:" required></textarea>
-                        <div id = "starContainer">
-                            <div class = "hitBox">
-                                <span class = "reviewStar" data-value = "1">&#9733;</span>
-                            </div>
-                            <div class = "hitBox">
-                                <span class = "reviewStar" data-value = "2">&#9733;</span>
-                            </div>
-                            <div class = "hitBox">
-                                <span class = "reviewStar" data-value = "3">&#9733;</span>
-                            </div>
-                            <div class = "hitBox">
-                                <span class = "reviewStar" data-value = "4">&#9733;</span>
-                            </div>
-                            <div class = "hitBox">
-                                <span class = "reviewStar" data-value = "5">&#9733;</span>
-                            </div>
-                        </div>
-                        <input type="hidden" id="rating" name="rating" required>
-                        <input type = "submit" id = "submitButton">
-                        <div id = "reviewError">
-                            <!--Error message goes here-->
-                            PLEASE SUBMIT A STAR RATING
-                        </div>
-                    </form>
-                </div>
-                <img src = "/images/parkside_food.png" id = "foodIMG">
+                <img src = "../images/evk_food.png" id = "foodIMG">
             </div>
         </div>
         <div id = "bottomSection">
             <h1 id = "bottomHeader">Weekly Menu Calendar</h1>
-            <div class="calendar" id="calendar"></div>
+            <div class="calendar" id="calendar">
+                <!-- Calendar will be populated here -->
+            </div>
         </div>
     </div>
     <script src = "parkside.js"></script>
