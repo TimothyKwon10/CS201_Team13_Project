@@ -7,7 +7,11 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/config"/>
                 
+<<<<<<< HEAD
         <property name="java-output-path" value="/merger201/build/classes"/>
+=======
+        <property name="java-output-path" value="/YOUR PROJECT NAME/build/classes"/>
+>>>>>>> e42fe4bfb5f661aa92ae2b2a6eca6443546b41d4
         <property name="context-root" value="DiningHall"/>
             
     </wb-module>

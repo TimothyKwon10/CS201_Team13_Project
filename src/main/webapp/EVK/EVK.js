@@ -899,7 +899,6 @@ function navigateTo(page) {
 }
 
 function menuSetup() {
-    // Fetch menu data from the server with the correct URL
     fetch('../MenuSelectServlet')
         .then(response => {
             if (!response.ok) {
@@ -908,16 +907,16 @@ function menuSetup() {
             return response.json();
         })
         .then(data => {
-            if (!data || !data.evk) {
+            if (!data) {
                 throw new Error('Invalid menu data received');
             }
 			
 			console.log(data);
             // Populate today's menu
-            populateTodayMenu(data.evk[0]); // First index is today's menu
+            populateTodayMenu(data[0].evk);
             
             // Setup the weekly calendar
-            setupWeeklyCalendar(data.evk);
+            setupWeeklyCalendar(data);
             
             // Enable favorites if user is logged in
             if (checkLoginStatus()) {
@@ -935,8 +934,26 @@ function menuSetup() {
 function populateTodayMenu(menuData) {
 	const menuEntry = document.getElementById('menuEntry');
     menuEntry.innerHTML = ''; // Clear existing content
+	
+	
+	const labels = ["Breakfast", "Brunch", "Lunch", "Dinner"];
+	for (let i = 0; i < 4; i++) {
+		const mealArray = menuData[i];
+		if (mealArray && mealArray.length > 0) {
+			if(menuEntry.innerText != ""){
+				menuEntry.innerText += "\n" 
+			}
+			menuEntry.innerText += labels[i] + ":\n";
+			for (let j = 0; j < mealArray.length; j++) {
+				menuEntry.innerText += mealArray[j].title + ":\n";
+				for(let k = 0; k < mealArray[j].meals.length; k++){
+					menuEntry.innerText += mealArray[j].meals[k] + "\n"
+				}
+			}
+		}
+	}
     
-    // Create HTML for each menu category
+    /*// Create HTML for each menu category
     menuData.forEach(category => {
         const categoryDiv = document.createElement('div');
         categoryDiv.className = 'menu-category';
@@ -969,7 +986,7 @@ function populateTodayMenu(menuData) {
         
         categoryDiv.appendChild(itemsDiv);
         menuEntry.appendChild(categoryDiv);
-    });
+    });*/
 }
 
 function setupWeeklyCalendar(weeklyMenu) {
@@ -977,29 +994,74 @@ function setupWeeklyCalendar(weeklyMenu) {
     calendar.innerHTML = ''; // Clear existing content
     
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const today = new Date().getDay();
+    const startDay = new Date();
     
     // Create calendar grid
     for (let i = 0; i < 7; i++) {
+		const currentDay = new Date(startDay);
+		currentDay.setDate(startDay.getDate() + i);
+		
         const dayDiv = document.createElement('div');
         dayDiv.className = 'day';
         
         // Add day header
         const headerH3 = document.createElement('h3');
         headerH3.className = 'day-header';
-        headerH3.textContent = days[i];
-        if (i === today) {
-            headerH3.textContent += ' (Today)';
-            dayDiv.classList.add('today');
-        }
+        headerH3.textContent = days[currentDay.getDay()];
+		if(i === 0){
+			headerH3.textContent = "Today";
+			
+		}
         dayDiv.appendChild(headerH3);
         
         // Add menu for the day
         const dayMenu = document.createElement('div');
         dayMenu.className = 'day-menu';
         
-        if (weeklyMenu[i]) {
-            weeklyMenu[i].forEach(category => {
+        if (weeklyMenu[i].evk) {
+			const currentDayMenu = weeklyMenu[i].evk;
+			
+			for(var j = 0; j < 4; j++){
+				if(currentDayMenu[j].length != 0){
+					const currentTimeOfDayArray = currentDayMenu[j]
+					for(var k = 0; k < currentTimeOfDayArray.length; k++){
+						const currentMenuObject = currentTimeOfDayArray[k];
+						
+						const categoryDiv = document.createElement('div');
+		                categoryDiv.className = 'meal-category';
+		                
+		                const categoryTitle = document.createElement('h4');
+		                categoryTitle.className = 'meal-category-title';
+		                categoryTitle.textContent = currentMenuObject.title;
+		                categoryDiv.appendChild(categoryTitle);
+		                
+		                const mealItems = document.createElement('div');
+		                mealItems.className = 'meal-items';
+						
+						for(var l = 0; l < currentMenuObject.meals.length; l++){
+							const meal = currentMenuObject.meals[l];
+							
+							const mealDiv = document.createElement('div');
+		                    mealDiv.className = 'meal-item';
+		                    
+		                    const mealSpan = document.createElement('span');
+		                    mealSpan.textContent = meal;
+		                    
+		                    const starBtn = document.createElement('button');
+		                    starBtn.className = 'star-btn';
+		                    starBtn.innerHTML = '<i class="far fa-heart"></i>'; // Empty heart
+		                    
+		                    mealDiv.appendChild(mealSpan);
+		                    mealDiv.appendChild(starBtn);
+		                    mealItems.appendChild(mealDiv);
+						}
+		                
+		                categoryDiv.appendChild(mealItems);
+		                dayMenu.appendChild(categoryDiv);
+					}
+				}
+			}
+            /*weeklyMenu[i].evk.forEach(category => {
                 const categoryDiv = document.createElement('div');
                 categoryDiv.className = 'meal-category';
                 
@@ -1029,7 +1091,7 @@ function setupWeeklyCalendar(weeklyMenu) {
                 
                 categoryDiv.appendChild(mealItems);
                 dayMenu.appendChild(categoryDiv);
-				});
+				});*/
 			} else {
             dayMenu.innerHTML = '<p class="no-menu">Menu not available</p>';
 			}
